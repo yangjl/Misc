@@ -1,1 +1,5 @@
 largedata/*
+.Rproj.user
+packrat/lib*/
+packrat/src/
+.R*
