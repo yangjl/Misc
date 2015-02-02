@@ -43,9 +43,43 @@ countexp <- function(exp=exp0, present=10, absent=0.1){
 }
 
 
-########
+#### for PAV genes and FGS 
 res <- countexp(exp=exp, present=10, absent=0.1)
 res <- merge(xpid, res, by.x="geno", by.y="plantid")
 write.table(res, "cache/exp_res.csv", row.names=FALSE, quote=FALSE, sep=",")
 
-#### 2. present in PHZ51, 
+res <- countexp(exp=exp, present=5, absent=0.1)
+res <- merge(xpid, res, by.x="geno", by.y="plantid")
+write.table(res, "cache/exp_res_p5a0.1.csv", row.names=FALSE, quote=FALSE, sep=",")
+
+res <- countexp(exp=exp, present=50, absent=0.1)
+res <- merge(xpid, res, by.x="geno", by.y="plantid")
+write.table(res, "cache/exp_res_p50a0.1.csv", row.names=FALSE, quote=FALSE, sep=",")
+
+res <- countexp(exp=exp, present=50, absent=1)
+res <- merge(xpid, res, by.x="geno", by.y="plantid")
+write.table(res, "cache/exp_res_p50a1.csv", row.names=FALSE, quote=FALSE, sep=",")
+
+res <- countexp(exp=exp, present=10, absent=1)
+res <- merge(xpid, res, by.x="geno", by.y="plantid")
+write.table(res, "cache/exp_res_p10a1.csv", row.names=FALSE, quote=FALSE, sep=",")
+
+
+
+
+
+
+
+
+
+#### FGS only 
+idx <- grep("^joint", row.names(exp))
+exp2 <- exp[-idx, ]
+res2 <- countexp(exp=exp2, present=10, absent=0.1)
+res2 <- merge(xpid, res2, by.x="geno", by.y="plantid")
+write.table(res2, "cache/exp_res_FGS.csv", row.names=FALSE, quote=FALSE, sep=",")
+
+
+
+
+
