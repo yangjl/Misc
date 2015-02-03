@@ -2,6 +2,7 @@
 ### Jan. 31th, 2015
 ### PHZ51
 
+### get the expression data
 xpid <- read.csv("data/rnaseq_genoid.csv")
 
 exp0 <- read.csv("largedata/1.gc/maize_gene_503lines.csv")
@@ -38,6 +39,7 @@ countexp <- function(exp=exp0, present=10, absent=0.1){
     }
     
     res <- merge(res1, res2, by="plantid")
+    res <- merge(xpid, res, by.x="geno", by.y="plantid")
     return(res)
     
 }

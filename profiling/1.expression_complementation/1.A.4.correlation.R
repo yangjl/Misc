@@ -15,34 +15,48 @@ hyb$P2 <- toupper(gsub(" ", "", hyb$P2))
 
 
 ###
-res <- read.csv("cache/exp_res_p50a1.csv")
+res <- read.csv("cache/exp_res.csv")
 
 res <- read.csv("cache/exp_res_p5a0.1.csv")
 res <- read.csv("cache/exp_res_p10a1.csv")
 res$comp <- res$comp1 + res$comp2
-
+pheno <- subset(pheno, P1 == "PI601322")
 
 
 ###### loop to selet the parameters
-for(k in 5:100){
-    res <- countexp(exp=exp, present=k, absent=0.1)
-    res <- merge(xpid, res, by.x="geno", by.y="plantid")
-    
-    
+myres2 <- data.frame()
+
+abrange <- seq(0.01, 0.5, by=0.01)
+for(k in abrange){
+    res <- countexp(exp=exp, present= 23, absent= k)
+    res$comp <- res$comp1 + res$comp2
     tem1 <- merge(hyb, res[, c("accenumb", "comp")], by.x="P2", by.y="accenumb")
     tem2 <- merge(hyb, res[, c("geno", "comp")], by.x="P2", by.y="geno")
     pheno <- rbind(tem1, tem2)
+    
     pheno <- subset(pheno, P1 == "PI601322")
     
     pheno[pheno[,3]<0, ][,3] <- "NA"
     x <- pheno$comp
-    y <- as.numeric(as.character(pheno[,i]))
-    if(cor.test(df$x, df$y)$p.value < 0.05){
-        print(k)
-        stop("I find it!")
+    for(i in 3:7){
+        y <- as.numeric(as.character(pheno[,i]))
+        df <- data.frame(x=x, y=y)
+        df <- subset(df, !is.na(x) & !is.na(y))
+        pval <- cor.test(df$x, df$y)$p.value
+        if(pval < 0.05){
+            print(k)
+            stop("I find it!")
+        }else{
+            print(sprintf("###>>> present para [ %s ], trait=names(pheno)[i],  pval = [ %s ]", k, pval))
+            tem <- data.frame(present=k, trait=names(pheno)[i], pval=pval)
+            myres2 <- rbind(myres2, tem)
+        }
     }
 }
 
+
+###
+myres
 
 ### remove outlier:
 pheno <- subset(pheno, comp < 600)
