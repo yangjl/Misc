@@ -22,6 +22,49 @@ Best,
 
 Cinta
 
+
+## Gene Age Identification
+
+The following papers are the human gene age researches.
+
+### Original paper: 
+- [A phylogenetically based transcriptome age index mirrors ontogenetic divergence patterns](http://www.nature.com/nature/journal/v468/n7325/full/nature09632.html)
+
+- 
+
+```
+perl createPsMap.pl -i Athaliana_167_protein_with_new_Header.fa -d phyloBlastDB_Drost_Gabel_Grosse_Quint.fa -p BLAST_Athaliana 
+                    -r athaliana_blast_results -t 30 -a 64 
+```
+
+The following taxonomy data was extracted from the `phyloBlastDB.fa`
+
+[ Eukaryota; Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliophyta; Liliopsida; commelinids; Poales; Poaceae; PACMAD clade; Panicoideae; Andropogoneae; Zea ]
+
+
+
+
+[ Archaea; Crenarchaeota; Thermoprotei; Desulfurococcales; Desulfurococcaceae; Aeropyrum; Aeropyrum pernix]
+
+[ Eukaryota; Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliophyta; Mesangiospermae; Liliopsida; Petrosaviidae; commelinids; Poales; Poaceae; PACMAD clade; Panicoideae; Andropogoneae; Zea ]
+
+
+
+[Eukaryota; Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliophyta; eudicotyledons; core eudicotyledons; rosids; malvids; Brassicales; Brassicaceae; Camelineae; Arabidopsis]
+
+[ Eukaryota; Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliophyta; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; malvids; Brassicales; Brassicaceae; Camelineae; Arabidopsis ]
+
+
+
+### Other related papers:
+1. [A transcriptomic hourglass in plant embryogenesis](http://www.nature.com/nature/journal/v490/n7418/full/nature11394.html)
+
+2. 
+
+
+
+
+
 ## Old projects
 
 
