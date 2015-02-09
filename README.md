@@ -39,7 +39,7 @@ perl createPsMap.pl -i Athaliana_167_protein_with_new_Header.fa -d phyloBlastDB_
 
 The following taxonomy data was extracted from the `phyloBlastDB.fa`
 
-[ Eukaryota; Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliophyta; Liliopsida; commelinids; Poales; Poaceae; PACMAD clade; Panicoideae; Andropogoneae; Zea ]
+[Zea mays] | [ Eukaryota; Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliophyta; Liliopsida; commelinids; Poales; Poaceae; PACMAD clade; Panicoideae; Andropogoneae; Zea ]
 
 
 
