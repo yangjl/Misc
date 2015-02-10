@@ -10,5 +10,11 @@ bedtools groupby -i gerpToFGS_v2.bed -g 1,2,3,4 -c 8 -o sum > sumgerp_in_gene.tx
 ##########
 gerp <- read.table("largedata/1.gc/sumgerp_in_gene.txt", header=FALSE)
 names(gerp) <- c("chr", "start", "end", "geneid","gerpsum")
-hist(log2(gerp$gerpsum), breaks=30, xlab="Log2 (sum of CS in genes)", col="wheat",
-     main="GERP score in FGSv2")
+gerp$gerpavg <- gerp$gerpsum/(gerp$end - gerp$start +1)
+
+par(mfrow=c(1,2))
+hist(log2(gerp$gerpsum), breaks=30, xlab="Log2 (sum of GERP in genes)", col="wheat",
+     main="Sum of GERP score in FGSv2")
+hist(gerp$gerpavg, breaks=30, xlab="mean GERP in genes", col="wheat",
+     main="Mean GERP score in FGSv2")
+
