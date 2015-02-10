@@ -12,6 +12,13 @@ gene <- subset(fgsv2, feature=="gene")
 #39656
 gene$attribute <- gsub("ID=", "", gene$attribute)
 gene$attribute <- gsub(";.*", "", gene$attribute)
+gene <- subset(gene, seqname %in% 1:10)
+
+bed4gene <- gene[, c("seqname", "start", "end", "attribute")]
+bed4gene$start <- bed4gene$start - 1
+
+write.table(bed4gene, "largedata/1.gc/FGSv2.bed4", row.names=FALSE, col.names=FALSE, quote=FALSE, sep="\t")
+
 
 ######################## Pan-transcriptome data #################
 exp <- read.csv("largedata/1.gc/maize_gene_503lines.csv")
@@ -26,7 +33,6 @@ two <- merge(gene, expos, by.x="attribute", by.y="row.names")
 
 sum(two$start-1 != two$position_left)
 which(two$end != two$position_right)
-
 
 
 
