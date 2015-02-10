@@ -15,7 +15,7 @@ sum(idx) #[1] 8681
 
 gene[is.na(gene)] <- 0.00001
 
-### write the daa
+### write the data
 write.table(gene, "largedata/1.gc/maize_gene_503lines.csv", sep=",", row.names=TRUE, quote=FALSE)
 
 
