@@ -1,18 +1,65 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.0.12
-RVersion: 3.0.2
-Repos: CRAN=http://cran.rstudio.com
+RVersion: 3.1.2
+Repos: CRAN=http://cran.rstudio.com,
+    BioCsoft=http://bioconductor.org/packages/3.0/bioc,
+    BioCann=http://bioconductor.org/packages/3.0/data/annotation,
+    BioCexp=http://bioconductor.org/packages/3.0/data/experiment,
+    BioCextra=http://bioconductor.org/packages/3.0/extra
 
-Package: fields
+Package: colorspace
 Source: CRAN
-Version: 7.1
-Hash: 9ddf8675cce79b252776782a1d85c5f9
-Requires: maps, spam
+Version: 1.2-6
+Hash: a53ddc5a49706984d234ea5cc209c8f0
 
-Package: mapdata
+Package: dichromat
 Source: CRAN
-Version: 2.2-3
-Hash: 66c3b3c01a04a8bd03901d2c0bc24f52
+Version: 2.0-0
+Hash: 42be2136555fa4b6167605df56d8cd7c
+
+Package: digest
+Source: CRAN
+Version: 0.6.8
+Hash: 89dc4c8734dad5322bb3c5c2af09056f
+
+Package: geosphere
+Source: CRAN
+Version: 1.3-11
+Hash: 13d55a922c33d6b4661bd095a306a450
+Requires: sp
+
+Package: ggmap
+Source: CRAN
+Version: 2.4
+Hash: 6e6d3591c5436f7eb68da14a1b6b868e
+Requires: digest, geosphere, ggplot2, jpeg, mapproj, plyr, png, proto,
+    reshape2, RgoogleMaps, rjson, scales
+
+Package: ggplot2
+Source: CRAN
+Version: 1.0.0
+Hash: c8bff66238347472f08b6a35608539ff
+Requires: digest, gtable, plyr, proto, reshape2, scales
+
+Package: gtable
+Source: CRAN
+Version: 0.1.2
+Hash: 0cf4a2b54c02b35dec7e74a8ebed12a0
+
+Package: jpeg
+Source: CRAN
+Version: 0.1-8
+Hash: 2a96df07e30724f8bb773e4f78c634c6
+
+Package: labeling
+Source: CRAN
+Version: 0.3
+Hash: 568a992912caf7eeddfb121924154047
+
+Package: mapproj
+Source: CRAN
+Version: 1.2-2
+Hash: 26b74cac98f12af52703765791824ea2
 Requires: maps
 
 Package: maps
@@ -20,11 +67,11 @@ Source: CRAN
 Version: 2.3-9
 Hash: 236a24fa187bb1f3a1694f2915597c5e
 
-Package: maptools
+Package: munsell
 Source: CRAN
-Version: 0.8-34
-Hash: 360a08ad2a714a213b8a6c35038ba356
-Requires: sp
+Version: 0.4.2
+Hash: fa8af6d040041439b249351e9d16ae9a
+Requires: colorspace
 
 Package: packrat
 Source: github
@@ -35,23 +82,83 @@ GithubUsername: rstudio
 GithubRef: v0.98.1000
 GithubSha1: e738f79a22521c57fad67a1679302385973cd958
 
+Package: plyr
+Source: CRAN
+Version: 1.8.1
+Hash: 6a4457c04af4cf5e4a8166ff59bcfd96
+Requires: Rcpp
+
+Package: png
+Source: CRAN
+Version: 0.1-7
+Hash: 7559dcd0a9f188351986d0494ec1516d
+
 Package: ProjectTemplate
 Source: CRAN
 Version: 0.5-1
 Hash: 884be7024aa4eb7bee03f75ecac5d668
 
-Package: rworldmap
+Package: proto
 Source: CRAN
-Version: 1.3-1
-Hash: e7ad85c3eba2fed986bddb4c3e2da28a
-Requires: fields, maptools, sp
+Version: 0.3-10
+Hash: 668a9e87cedbdc5f56c396edf1bd2648
+
+Package: raster
+Source: CRAN
+Version: 2.3-33
+Hash: 95d3f303dbdf0b95c970dcd5f8ee7e45
+Requires: sp
+
+Package: RColorBrewer
+Source: CRAN
+Version: 1.1-2
+Hash: 5203278413b09be06483c5ac1920bb05
+
+Package: Rcpp
+Source: CRAN
+Version: 0.11.5
+Hash: 3e452cb48f3ec8a7cf27fb9ab8624639
+
+Package: reshape2
+Source: CRAN
+Version: 1.4.1
+Hash: d3d77b083fd5485f674487aa23011ea7
+Requires: plyr, Rcpp, stringr
+
+Package: RgoogleMaps
+Source: CRAN
+Version: 1.2.0.7
+Hash: 7b89070606956de87fd505efec283740
+Requires: png, RJSONIO
+
+Package: rjson
+Source: CRAN
+Version: 0.2.15
+Hash: f78059fac4af154bfe46bf547ae12be9
+
+Package: RJSONIO
+Source: CRAN
+Version: 1.3-0
+Hash: 8b1341dfd547c90ed4b3365d5aa46a7b
+
+Package: scales
+Source: CRAN
+Version: 0.2.4
+Hash: b8b1af97bd07818605223060386b00dd
+Requires: dichromat, labeling, munsell, plyr, RColorBrewer
 
 Package: sp
 Source: CRAN
 Version: 1.0-17
 Hash: 29bd0f1fc6cba0edf00eafe2b5b8e9d0
 
-Package: spam
+Package: stringr
 Source: CRAN
-Version: 1.0-1
-Hash: 93c30ed45a309377f3059db3c76c94df
+Version: 0.6.2
+Hash: cdde0cfa0f52cffeaca23a11a3899779
+
+Package: weatherData
+Source: CRAN
+Version: 0.4.1
+Hash: a1d95218411a23b59082482e0e1275d9
+Requires: plyr
