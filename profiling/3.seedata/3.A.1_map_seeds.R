@@ -1,5 +1,9 @@
+### Jinliang Yang
+### experiments on map plotting
 
+install.packages("dismo")
 
+library(dismo)
 library(maps)       # Provides functions that let us plot the maps
 library(mapdata)    # Contains the hi-resolution points that mark out the countries.
 library(ggmap)
@@ -56,3 +60,22 @@ ggmap(mymap) +
 geom_point(aes(x = longitude, y = latitude), data = seeds,
            alpha = .5, color="darkred", size = 1)
 
+### location of Totontepec
+#17.216667, -95.983333
+
+
+#http://gis.stackexchange.com/questions/119736/ggmap-create-circle-symbol-where-radius-represents-distance-miles-or-km
+d <- data.frame(lat = c(33.79245), lon = c(-84.32130))
+
+coordinates(d) <- ~ lon + lat
+projection(d) <- "+init=epsg:4326"
+
+emory <- gmap(extent(-130, -56, -34, 55), zoom = 10, scale = 2)
+d_mrc <- spTransform(d, CRS = CRS(projection(mymap)))
+# Miles to meters conversion
+mile2meter <- function(x) {
+    x * 1609.344
+}
+
+# Buffer creation
+d_mrc_bff <- gBuffer(d_mrc, width = mile2meter(20))

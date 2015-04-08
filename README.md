@@ -2,8 +2,14 @@
 
 ## Current active one
 
-### Hypothesis testing of hypothesis testing
+## SeeD data
 
+### GBS2.7 for SeeD
+- GID (Germplasm ID at CIMMYT; General_identifier in Germinate)
+
+---------
+
+## Old projects
 ```
 Dear All,
 
@@ -65,6 +71,6 @@ The following taxonomy data was extracted from the `phyloBlastDB.fa`
 
 
 
-## Old projects
+
 
 
