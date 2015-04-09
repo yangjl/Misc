@@ -3,3 +3,4 @@ largedata/*
 packrat/lib*/
 packrat/src/
 .R*
+slurm-log/
