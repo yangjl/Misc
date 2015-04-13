@@ -10,14 +10,17 @@ getDistance <- function(df=idinfo, lon=-95.983333,lan=17.216667){
 #########
 DefineDist <- function(){
     locinfo <- read.delim("data/seeds_09.02.2015_22.38.10.txt", header=TRUE)
+    locinfo$GID <- paste0("G", locinfo$general_identifier)
     
     ids <- read.csv("data/SeeD_SID_to_GID.csv")
     # 4710    2
     # Note: some of about 600 with no collection information
     length(unique(ids$GID))
+    ids$GID <- paste0("G", ids$GID)
     #4020
-    # Note: 
-    idinfo <- merge(ids, locinfo, by.x="GID", by.y="general_identifier")
+    # Note: 583 GBS accessions without collection information!
+    
+    idinfo <- merge(ids, locinfo, by="GID", all.x=TRUE)
     length(unique(idinfo$GID))
     #3493
     
@@ -30,8 +33,10 @@ DefineDist <- function(){
 }
 
 idinfo <- DefineDist()
-write.table(idinfo, "data/SeeD_idinfo.csv", sep=",", row.names=FALSE, quote=FALSE)
-
+#idinfo$GID <- paste0("G", idinfo$GID)
+idinfo <- idinfo[, c("GID", "SampleID", "number",  "colldate", "flowering_season_start",
+                     "growing_season_start", "elevation", "latitude",  "longitude", "dist")]
+write.table(idinfo, "data/SeeD_idinfo.csv", sep=",", quote=FALSE,  row.names=FALSE)
 
 
 hist(idinfo$elevation, breaks=50, main="SeeDs Data", xlab="Elevation", col="grey")
