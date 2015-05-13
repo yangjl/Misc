@@ -2,29 +2,48 @@
 ### May 12th, 2015
 ### 
 
+source("~/Documents/Github/zmSNPtools/Rcodes/mixed_model.R")
 
-nathan <- read.csv("data/Nathan_p1_subset.csv")
-
-genotype <- unique(nathan$INBRED)
-
-
-
-nathan <- read.csv("data/Nathan_p1_subset.csv")
-nathan <- nathan[nathan$X10KW_Inbred !=".",]
-nathan$X10KW_Inbred <- as.numeric(as.character(nathan$X10KW_Inbred))/10
-names(nathan)[7] <- "AKW_Inbred" 
-
-akwblue <- getblue(amesdata=ear, panzeadata=nathan, trait="AKW", model=AKW~Genotype, nathan=TRUE)
-
-library(nlme)
-BLUE <- function(data=krn, model=KRN~Genotype, random=~1|Datasource/Farm/Year, trait="KRN", intercept="B73"){
-    lmeout1 <- lme(model, data=data, random=random);
-    ped.hat1 <- lmeout1$coef$fixed;
-    ped.hat1[-1] <- ped.hat1[-1]+ped.hat1[1];
-    names(ped.hat1)[1]=intercept;
-    names(ped.hat1) <- gsub("Genotype", "", names(ped.hat1));
-    tped <- data.frame(Genotype=names(ped.hat1), trait=ped.hat1)
-    names(tped)[2] <- trait;
-    return(tped)
+    
+getpheno <- function(traits="X10KW_Inbred"){
+    nathan <- read.csv("data/Nathan_p1_subset.csv")
+    a1 <- nrow(nathan)
+    nathan$INBRED <- toupper(nathan$INBRED)
+    #genotype <- unique(nathan$INBRED)
+    #nathan <- read.csv("data/Nathan_p1_subset.csv")
+    
+    toi <- traits[1]
+    nathan <- nathan[nathan[, toi] !=".",]
+    nathan[, toi] <- as.numeric(as.character(nathan[, toi]))
+    message(sprintf("###>>> total [ %s ], remaining [ %s ] for trait [ %s ]", a1, nrow(nathan), toi))
+    out <- mixed_model(data = nathan, model = as.formula(paste(toi, "~ INBRED")), random = ~1 | Env, 
+                          trait = toi)
+    out$sex <-1
+    out <- out[, c(1,3,2)]
+    for(i in 2:length(traits)){
+        toi <- traits[i]
+        nathan <- nathan[nathan[, toi] !=".",]
+        nathan[, toi] <- as.numeric(as.character(nathan[, toi]))
+        message(sprintf("total [ %s ], remaining [ %s ] for trait [ %s ]", a1, nrow(nathan), toi))
+        myblue <- mixed_model(data = nathan, model = as.formula(paste(toi, "~ INBRED")), random = ~1 | Env, 
+                              trait = toi)
+        out <- merge(out, myblue, by="Genotype", all=TRUE)
+    }
+    
+    nm <- names(out)
+    nm <- gsub("_.*", "", nm)
+    names(out) <- nm
+    return(out)
 }
+
+##########
+mytraits <- c("X10KW_Inbred","KC_Inbred","CD_Inbred","CL_Inbred","CW_Inbred","TKW_Inbred")
+pheno <- getpheno(traits=mytraits)
+names(pheno)[1] <- "id"
+
+write.table(pheno, "largedata/4.sweet/pheno_ames282.txt", row.names=FALSE, quote=FALSE, sep="\t")
+
+par(mfrow=c(2,3))
+for(i in 3:8)
+hist(pheno[, i])
 
