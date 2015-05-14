@@ -41,9 +41,4 @@ mytraits <- c("X10KW_Inbred","KC_Inbred","CD_Inbred","CL_Inbred","CW_Inbred","TK
 pheno <- getpheno(traits=mytraits)
 names(pheno)[1] <- "id"
 
-write.table(pheno, "largedata/4.sweet/pheno_ames282.txt", row.names=FALSE, quote=FALSE, sep="\t")
-
-par(mfrow=c(2,3))
-for(i in 3:8)
-hist(pheno[, i])
-
+write.table(pheno, "data/pheno_ames282.txt", row.names=FALSE, quote=FALSE, sep="\t")

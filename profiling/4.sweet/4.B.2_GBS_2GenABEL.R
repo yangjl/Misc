@@ -3,10 +3,10 @@
 
 #source("~/Documents/Github/zmSNPtools/Rcodes/dsnp2GenABEL.R")
 library("data.table", lib="~/bin/Rlib/")
-library("GenABEL.data", lib="~/bin/Rlib/")
-library("GenABEL", lib="~/bin/Rlib/")
+#library("GenABEL.data", lib="~/bin/Rlib/")
+#library("GenABEL", lib="~/bin/Rlib/")
 
-bed2illumina <- function(mafcutoff=0.05, missingrate=0.2){
+bed2illumina <- function(mafcutoff=0.05, missingrate=0.5){
     #######==> GBS data for GenABEL
     gbs <- fread("/group/jrigrp4/AllZeaGBSv2.7impV5/ZeaGBSv27_Ames282.bed5")
     gbs <- as.data.frame(gbs)
@@ -42,10 +42,7 @@ bed2illumina <- function(mafcutoff=0.05, missingrate=0.2){
     write.table(gbs1, "largedata/4.sweet/ZeaGBSv27_Ames282.illumina", sep="\t", row.names=FALSE, quote=FALSE)
 }
 
-
-
-bed2illumina(mafcutoff=0.05, missingrate=0.2)
-###>>> Read 509572 rows and 293 (of 293) columns from 0.291 GB file in 00:00:13
-###>>> Input [ 509572 ] GBS data, after filtering, [ 197686 ] remaining
-
+bed2illumina(mafcutoff=0.05, missingrate=0.5)
+###>>> Read 509572 rows and 293 (of 293) columns from 0.291 GB file in 00:00:14
+###>>> Input [ 509572 ] GBS data, after filtering, [ 306190 ] remaining
 
