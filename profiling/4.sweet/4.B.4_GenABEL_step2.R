@@ -30,6 +30,7 @@ gm.qc1 <- gm[qc1$idok, chr5snp]
 par(mfrow=c(1,2))
 res1 <- qtscore(X10KW, data=gm.qc1, trait = "gaussian" )
 res2 <- qtscore(TKW, data=gm.qc1, trait = "gaussian")
+
 plot(res1)
 abline(v=127466000)
 plot(res2)
