@@ -6,4 +6,4 @@
 set -e
 set -u
 
-R --no-save < profiling/7.pheno/7.1.A_pheno_KRN-GWAS.R
+R --no-save < profiling/7.pheno/7.1.B_pheno_model_comp.R
