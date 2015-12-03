@@ -4,3 +4,4 @@ packrat/lib*/
 packrat/src/
 .R*
 slurm-log/
+.DS_Store
