@@ -18,3 +18,16 @@ hist(log2(gerp$gerpsum), breaks=30, xlab="Log2 (sum of GERP in genes)", col="whe
 hist(gerp$gerpavg, breaks=30, xlab="mean GERP in genes", col="wheat",
      main="Mean GERP score in FGSv2")
 
+###########
+exp0 <- read.csv("largedata/1.gc/maize_gene_503lines.csv")
+
+res <- apply(exp0[, 4:506], 1, mean)
+xp <- data.frame(geneid=names(res), exp=res)
+
+res2 <- merge(gerp, xp, by="geneid")
+res2 <- subset(res2, exp > 1/500 & exp < 200)
+
+res2$logexp <- log2(res2$exp)
+#res2 <- subset(res2, abs(logexp) > 10)
+plot(res2$logexp, res2$gerpavg)
+
