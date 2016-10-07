@@ -2,6 +2,10 @@
 ### experiments on map plotting
 
 install.packages("dismo")
+install.packages("rworldmap")
+install.packages("ggmap")
+install.packages("mapdata")
+
 
 library(dismo)
 library(maps)       # Provides functions that let us plot the maps
@@ -40,7 +44,7 @@ plot(newmap, xlim = c(-20, 59), ylim = c(35, 71), asp = 1)
     +   geom_point(aes(x = lon, y = lat, size = sqrt(flights)), data = airportD, alpha = .5)
 
 library(ggmap)
-mapImageData1 <- get_map(location = c(lon = -0.016179, lat = 51.538525),
+mapImageData1 <- get_map(location = c(lon = -121.762681, lat = 38.536762),
                          color = "color",
                          source = "google",
                          maptype = "satellite",

@@ -39,6 +39,7 @@ idinfo <- idinfo[, c("GID", "SampleID", "number",  "colldate", "flowering_season
 write.table(idinfo, "data/SeeD_idinfo.csv", sep=",", quote=FALSE,  row.names=FALSE)
 
 
+idinfo <- read.csv("data/SeeD_idinfo.csv")
 hist(idinfo$elevation, breaks=50, main="SeeDs Data", xlab="Elevation", col="grey")
 ######################################################################################
 library(ggmap)
@@ -53,7 +54,7 @@ mymap <- get_map(location=myloc, source="google", crop=TRUE, color="bw")
 ggmap(mymap) + 
     geom_point(aes(x = longitude, y = latitude), data = idinfo,
                alpha = .5, color="darkred", size = 1) +
-    geom_line(aes(r*cos(angles)+x,r*sin(angles)+y), alpha=.6, color="blue")
+    geom_line(aes(r*cos(angles)+x, r*sin(angles)+y), alpha=.6, color="blue")
 
 ### location of Totontepec
 ####################################################################
