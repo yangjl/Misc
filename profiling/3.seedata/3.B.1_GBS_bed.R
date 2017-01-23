@@ -13,26 +13,19 @@ length(unique(idtab$SampleID))
 
 
 ##### transform GBS to BED format
+library(data.table)
 source("lib/gbs2bed.R")
-for(i in 5:9){
-    gbs2bed(gbsfile= paste0("~/dbcenter/seeds_data/All_SeeD_2.7_chr", i, "_no_filter.unimputed.hmp.txt"),
-            outfile= paste0("~/dbcenter/seeds_data/chr", i, "_filetered_unimputed.hmp"))
-    
-}
-
-##### run the following python code to get the SNP frq and missing rate
-snpfrq -p ~/dbcenter/seeds_data/ -i chr10_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr10_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr9_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr9_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr8_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr8_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr7_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr7_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr6_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr6_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr5_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr5_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr4_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr4_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr3_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr3_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr2_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr2_filetered_unimputed.frq
-snpfrq -p ~/dbcenter/seeds_data/ -i chr1_filetered_unimputed.hmp -s 6 -m "0N" -a 0 -b 1 -c 2 -o chr1_filetered_unimputed.frq
 
 
+gbs2plink(gbsfile="largedata/genotypes/SB.imputed.hmp",
+        outfile="largedata/genotypes/SB.imputed")
+
+
+system("plink --tfile SB.imputed --make-bed --out SB.imputed")
+system("plink --bfile SB.imputed --freq --missing --out SB.imputed")
+system("plink --bfile SB.imputed --het --ibc --out SB.imputed")
+
+system("plink --bfile SB.imputed --indep-pairwise 100 10 0.05 --r2 --out SB.imputed")
 
 
 

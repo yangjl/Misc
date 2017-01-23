@@ -5,3 +5,4 @@ packrat/src/
 .R*
 slurm-log/
 .DS_Store
+data/dong_etal/
