@@ -9,4 +9,4 @@ run_pipeline.pl -Xmx64g -fork1 -h5 ZeaGBSv27_publicSamples_imputedV5_AGPv2-15011
 run_pipeline.pl -Xmx64g -SortGenotypeFilePlugin -inputFile AllZeaGBSv2.7_publicSamples_imputedV3b_agpv3.hmp.gz -outputFile ZeaGBSv27_agpv3_sorted -fileType Hapmap
 
 # for GBS2.7, the "keep_list_NAM_children.txt" is just a one column list to keep
-run_pipeline.pl -Xmx64g -fork1 -h ZeaGBSv27_agpv3_sorted.hmp.txt -includeTaxaInfile ~/Documents/Github/Misc/data/Taxa_ames282_288.txt -export ZeaGBSv27_Ames282_agpv3 -exportType Hapmap -runfork1
+run_pipeline.pl -Xmx64g -fork1 -h ZeaGBSv27_agpv3_sorted.hmp.txt -includeTaxaInfile ~/Documents/Github/Misc/data/FullName_ames282_288.txt -export ZeaGBSv27_Ames282_agpv3 -exportType Hapmap -runfork1
