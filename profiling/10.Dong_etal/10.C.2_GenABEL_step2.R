@@ -6,8 +6,12 @@ library("data.table", lib="~/bin/Rlib/")
 library("GenABEL.data", lib="~/bin/Rlib/")
 library("GenABEL", lib="~/bin/Rlib/")
 
+
+
+
 ### load the data
-gm <- load.gwaa.data(phe="data/pheno_ames282.txt", gen="largedata/4.sweet/geno_ames264.raw", force=T)
+gm <- load.gwaa.data(phe="largedata/BLUPs/MainSpikeLength.csv", 
+                     gen="largedata/10.Dong/ZeaGBSv27_278_agpv3.raw", force=T)
 head(gm@phdata)
 #gm@gtdata
 
