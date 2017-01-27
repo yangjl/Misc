@@ -16,6 +16,8 @@ getp <- function(){
     
     names(p)[1] <- "id"
     p$id <- toupper(p$id)
+    p$sex <- 1
+    write.table(p, "largedata/pheno_282_dong.txt", sep="\t", row.names=FALSE, quote=FALSE)
 }
 
 

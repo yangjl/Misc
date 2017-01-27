@@ -6,32 +6,47 @@ library("data.table", lib="~/bin/Rlib/")
 library("GenABEL.data", lib="~/bin/Rlib/")
 library("GenABEL", lib="~/bin/Rlib/")
 
-load("cache/gwas_res.RData")
-res1 <- results(res1)
-res1$qval <- p.adjust(res1$P1df, method = "fdr")
-res2 <- results(res2)
+load("largedata/dong_gwas_res.RData")
+
+#plot(res1.mm, main="10 kernel weight", pch=16, col="cadetblue")
+plot(res2.mm, main="NumberofTilleringPlants", pch=16, col="cadetblue")
+#plot(res3.mm, main="10 kernel weight", pch=16, col="cadetblue")
+plot(res4.mm, main="Spikelets.MainSpike", pch=16, col="cadetblue")
+plot(res5.mm, main="Spikelets.PrimaryBranch", pch=16, col="cadetblue")
+#plot(res6.mm, main="TasselBranchLength", pch=16, col="cadetblue")
+#plot(res7.mm, main="10 kernel weight", pch=16, col="cadetblue")
+#plot(res8.mm, main="10 kernel weight", pch=16, col="cadetblue")
+
+res2 <- results(res2.mm)
 res2$qval <- p.adjust(res2$P1df, method = "fdr")
-res1.eg <- results(res1.eg)
-res2.eg <- results(res2.eg)
-res1.mm <- results(res1.mm)
-res2.mm <- results(res2.mm)
+
+res4 <- results(res4.mm)
+res5 <- results(res5.mm)
 
 write.table(res1.mm[, 1:11], "data/Table_gwas_10kw.txt", sep="\t", quote=FALSE)
 write.table(res2.mm[, 1:11], "data/Table_gwas_tkw.txt", sep="\t", quote=FALSE)
 
 pdf("graphs/Figure_results.pdf", width=10, height=5)
-par(mfrow=c(1,2))
-plot(x=res1.mm$Position, y=-log10(res1.mm$Pc1df), xlab="Chromosome 5", main="Ten Kernel Weight",
-     ylab="-log10(q-value)", pch=19, col="cadetblue")
-abline(v=127466000, col="blue", lty=2, lwd=2)
-abline(h=-log10(0.01), col="red", lty=2, lwd=2)
+par(mfrow=c(1,3))
+plot(x=res2$Position, y=-log10(res2$Pc1df), xlab="Chromosome 3", main="Number of Tillering Plants",
+     ylab="-log10(q-value)", pch=19, cex=1.3, col="cadetblue")
+abline(v=150088574, col="grey", lty=2, lwd=2)
+abline(v=150091550, col="grey", lty=2, lwd=2)
+abline(h=-log10(0.01), col="red", lty=2, lwd=1)
 #S5_128108485 B73=T
 
-plot(x=res2.mm$Position, y=-log10(res2.mm$Pc1df), xlab="Chromosome 5", main="Total Kernel Weight",
-     ylab="-log10(q-value)", pch=19, col="cadetblue")
-abline(v=127466000, col="blue", lty=2, lwd=2)
-abline(h=-log10(0.01), col="red", lty=2, lwd=2)
+plot(x=res4$Position, y=-log10(res4$Pc1df), xlab="Chromosome 3", main="Spikelets Main Spike",
+     ylab="-log10(q-value)", pch=19, cex=1.3, col="cadetblue")
+abline(v=150088574, col="grey", lty=2, lwd=2)
+abline(v=150091550, col="grey", lty=2, lwd=2)
+abline(h=-log10(0.01), col="red", lty=2, lwd=1)
 #S5_127255673 B73=A
+
+plot(x=res5$Position, y=-log10(res5$Pc1df), xlab="Chromosome 3", main="Spikelets Primary Branch",
+     ylab="-log10(q-value)", pch=19, cex=1.3, col="cadetblue")
+abline(v=150088574, col="grey", lty=2, lwd=2)
+abline(v=150091550, col="grey", lty=2, lwd=2)
+abline(h=-log10(0.01), col="red", lty=2, lwd=1)
 dev.off()
 
 ######### heritability and effect size #################
