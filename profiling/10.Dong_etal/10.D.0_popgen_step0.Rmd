@@ -1,0 +1,67 @@
+---
+title: "VCF_convert"
+author: "Jinliang Yang"
+date: "2/2/2017"
+output: pdf_document
+---
+
+# VCF AGPv3 => AGPv4
+### setid
+```
+bcftools annotate --set-id +'%CHROM\_%POS\_%REF\_%FIRST_ALT' merged_flt_ad_c3.vcf.gz -r 3:140088574-160091550 -Oz -o chr3_agpv3_140-160M.vcf.gz
+```
+### get BED file
+```
+bcftools query chr3_agpv3_140-160M.vcf.gz -f '%CHROM\t%POS\t%POS\t%ID\n' > chr3_agpv3_140-160M.bed
+```
+
+### Convert using Assembly Converter
+[site](http://plants.ensembl.org/Zea_mays/Tools/AssemblyConverter?db=core)
+
+```{r, eval=FALSE}
+d <- read.table("~/dbcenter/HapMap/HapMap3/chr3_agpv3_140-160M.bed", header=FALSE)
+d$V2 <- d$V2 - 1
+d$V2 <- format(d$V2, scientific = FALSE)
+d$V3 <- format(d$V3, scientific = FALSE)
+write.table(d, "~/dbcenter/HapMap/HapMap3/chr3_agpv3_140-160M.bed", sep="\t", row.names=FALSE, quote=FALSE)
+```
+
+```{r, eval=FALSE}
+d <- read.table("~/Documents/Github/Misc/chr3_agpv3_140-160M.bed", header=T)
+d$snpid <- 1:nrow(d)
+d$V2 <- format(d$V2, scientific = FALSE)
+d$V3 <- format(d$V3, scientific = FALSE)
+write.table(d[1:350000, -4], "~/Documents/Github/Misc/chr3_agpv3_140-160M_1.bed", sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
+write.table(d[350001:nrow(d), -4], "~/Documents/Github/Misc/chr3_agpv3_140-160M_2.bed", sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
+
+out1 <- read.table("~/Documents/Github/Misc/largedata/output_chr3_agpv3_140-160M_1.bed")
+out2 <- read.table("~/Documents/Github/Misc/largedata/output_chr3_agpv3_140-160M_2.bed")
+out <- rbind(out1, out2)
+names(out)[1:3] <- c("newchr", "news", "newe")
+
+outd <- merge(d, out, by.x="snpid", by.y="V4")
+write.table(outd[outd$V1 == outd$newchr, c("V4", "newe")], "~/Documents/Github/Misc/largedata/agpv4_chr3_agpv3_140-160M.bed", sep="\t", row.names=FALSE, quote=FALSE, col.names=FALSE )
+```
+
+
+### using PLINK to update-position
+```
+plink -vcf chr3_agpv3_140-160M.vcf.gz --keep-allele-order --make-bed --out chr3_agpv3_140-160M
+plink -bfile chr3_agpv3_140-160M --update-map agpv4_chr3_agpv3_140-160M.bed --make-bed --out agpv4_chr3_agpv3_140-160M
+plink -bfile agpv4_chr3_agpv3_140-160M --recode vcf-iid --out agpv4_chr3_agpv3_140-160M
+```
+
+### BGZIP and Idx
+```
+# vcf would not be kept.
+bgzip agpv4_chr3_agpv3_140-160M.vcf
+
+tabix -p vcf agpv4_chr3_agpv3_140-160M.vcf.gz
+```
+
+
+
+
+
+
+
