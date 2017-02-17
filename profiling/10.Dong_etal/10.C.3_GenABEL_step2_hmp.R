@@ -10,8 +10,8 @@ library("GenABEL", lib="~/bin/Rlib/")
 
 
 ### load the data
-gm <- load.gwaa.data(phe="largedata/pheno_282_dong.txt", 
-                     gen="/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.raw", force=T)
+gm <- load.gwaa.data(phe="largedata/pheno_282_dong_lc.txt", 
+                     gen="/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_151M_282set.raw", force=T)
 head(gm@phdata)
 #gm@gtdata
 
@@ -31,11 +31,11 @@ chr3snp <- as.character(subset(tb, chr == 3 & pos > 150088574 - BP & pos < 15009
 
 #207
 gm.qc <- gm[qc1$idok, qc1$snpok]
-gm.qc.chr3 <- gm[qc1$idok, chr3snp]
+
 
 ############### simple model ##########################
 par(mfrow=c(1,2))
-res1 <- qtscore(CobDiameter, data=gm.qc.chr3, trait = "gaussian" )
+res1 <- qtscore(CobDiameter, data=gm.qc, trait = "gaussian" )
 res2 <- qtscore(TKW, data=gm.qc1, trait = "gaussian")
 
 plot(res1)

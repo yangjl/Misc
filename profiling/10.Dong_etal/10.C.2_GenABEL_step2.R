@@ -10,16 +10,29 @@ library("GenABEL", lib="~/bin/Rlib/")
 
 
 ### load the data
-gm <- load.gwaa.data(phe="largedata/pheno_282_dong.txt", 
+gm1 <- load.gwaa.data(phe="largedata/pheno_282_dong.txt", 
                      gen="largedata/10.Dong/ZeaGBSv27_278_agpv4.raw", force=T)
 head(gm@phdata)
 #gm@gtdata
+
+
+### load the data
+gm2 <- load.gwaa.data(phe="largedata/pheno_282_dong_lc.txt", 
+                     gen="/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_151M_282set.raw", force=T)
+head(gm@phdata)
+gm2@phdata$id <- toupper(gm2@phdata$id)
+gm2@gtdata@idnames <- toupper(gm2@gtdata@idnames)
+
+gm <- merge.gwaa.data(gm1, gm2)
+
 
 ################# QC1 #########################
 qc1 <- check.marker(gm, p.level=0, callrate=0.5, ibs.mrk=0, maf=0.05, perid.call=0.5)
 # 0 people excluded because too high autosomal heterozygosity (FDR <1%)
 # In total, 310943 (100%) markers passed all criteria
 # In total, 278 (100%) people passed all criteria
+
+
 
 ### using the simple model GWAS
 tem <- data.frame(snpid=qc1$call$name, chr=qc1$call$chromosome, pos=qc1$call$map)

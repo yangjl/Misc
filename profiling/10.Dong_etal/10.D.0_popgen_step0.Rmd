@@ -10,6 +10,8 @@ output: pdf_document
 ```
 bcftools annotate --set-id +'%CHROM\_%POS\_%REF\_%FIRST_ALT' merged_flt_ad_c3.vcf.gz -r 3:140088574-160091550 -Oz -o chr3_agpv3_140-160M.vcf.gz
 
+#bcftools query agpv4_chr3_agpv3_140-160M.vcf.gz -f '%CHROM\t%POS\t%POS\t%ID[\t%GT]\n' > chr3_agpv3_140-160M.txt
+
 ```
 ### get BED file
 ```
@@ -51,9 +53,46 @@ plink -vcf chr3_agpv3_140-160M.vcf.gz --keep-allele-order --make-bed --out chr3_
 plink -bfile chr3_agpv3_140-160M --update-map agpv4_chr3_agpv3_140-160M.bed --make-bed --out agpv4_chr3_agpv3_140-160M
 plink -bfile agpv4_chr3_agpv3_140-160M --recode vcf-iid --out agpv4_chr3_agpv3_140-160M
 
-plink -bfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --recode vcf-iid --out agpv4_chr3_agpv3_151M
+### change to unique ID "_nrow()"
+plink -bfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --keep set282.txt --recode vcf-iid --out agpv4_chr3_agpv3_151M_282set
 
-bcftools view agpv4_chr3_agpv3_140-160M.vcf.gz -r 3:151229000-151432000 -m2 -M2 -Ov -o agpv4_chr3_agpv3_151M.vcf
+plink -bfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --r --ld-window-r2 0.3 --out agpv4_chr3_agpv3_151M
+
+bcftools view agpv4_chr3_agpv3_151M.vcf -m2 -M2 -Ov -o agpv4_chr3_agpv3_151M_2snp.vcf
+bcftools query agpv4_chr3_agpv3_140-160M.vcf.gz -f '%CHROM\t%POS\t%POS\t%ID[\t%GT]\n' > chr3_agpv3_140-160M.txt
+```
+
+
+### LD 
+```{r}
+### change sample id
+tfam <- read.table("~/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.tfam")
+
+
+p <- read.table("largedata/pheno_282_dong.txt", header=T)
+sub <- subset(tfam, toupper(as.character(V2)) %in% p$id)
+sub <- subset(sub, V1 %in% "282set")
+write.table(sub[, 1:2], "~/dbcenter/HapMap/HapMap3/set282.txt", row.names=FALSE, quote=FALSE, col.names=FALSE)
+
+fam$V2 <- paste(fam$V2, 1:nrow(fam), sep="_")
+write.table(fam, "~/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.fam", sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
+
+
+library("data.table")
+r <- fread("~/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_151M.ld")
+
+myr <- subset(r, BP_A == 151322011 | BP_B == 151322011)
+
+sample <- read.table("largedata/pheno_282_dong.txt", header=TRUE)
+
+
+```
+
+
+
+```
+### change to unique ID "_nrow()"
+plink -tfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --keep set282.txt --recode transpose --out agpv4_chr3_agpv3_151M_282set
 ```
 
 ### BGZIP and Idx
