@@ -50,19 +50,26 @@ gene <- makeGene(id = "Zm00001d042111", type="ensembl_gene_id", biomart = zm)
 transcript <- makeTranscript(id = "Zm00001d042111", type="ensembl_gene_id", biomart = zm)
 gdPlot(list(gene, transcript))
 
+seq <- getSequence(chromosome=3, start = 151320000 -BP, end = 151333389 + BP, mart = zm)
+seq <- getSequence(id = "Zm00001d042111", mart = zm)
+
 
 BP <- 100000
-pList = list("Nagalakshmi" = makeBaseTrack(base = res2$Position, value = -log10(res2$P1df), 
-                                           dp = DisplayPars(lwd = .3, color = "darkblue", ylim = c(0,5))),
+pList = list("-log10(P value)" = makeBaseTrack(base = res2$Position, value = -log10(res2$P1df), 
+                                           dp = DisplayPars(lwd = .3, cex=2, color = "darkblue", ylim = c(0,3.5))),
              
-             "Gene Model" = makeGeneRegion(chromosome = 3, start = 151320000 -BP, end = 151333389 + BP, 
+             "Gene" = makeGeneRegion(chromosome = 3, start = 151320000 -BP, end = 151333389 + BP, 
                                   strand = "+", biomart = zm, 
                                   dp = DisplayPars(plotId = TRUE, idRotation = 0, cex = 1.2)),
-             "Position" = makeGeneRegion(chromosome = 3, start = 151320000 -BP, end = 151333389 + BP, 
+             "Pos" = makeGeneRegion(chromosome = 3, start = 151320000 -BP, end = 151333389 + BP, 
                                          strand = "-", biomart = zm, 
-                                         dp = DisplayPars(plotId = FALSE, idRotation = 0, cex = .5)),
+                                         dp = DisplayPars(plotId = FALSE, idRotation = 90, cex = 1.2)),
              makeGenomeAxis(dp = DisplayPars(size = 1)))
 
 gdPlot(pList, minBase = 151320000 -BP, maxBase = 151333389 + BP, 
        overlay = makeRectangleOverlay(start = 151320000 -BP, end = 151333389 + BP, region = c(4,8), 
-                                      dp = DisplayPars(alpha = .2)))
+                                      dp = DisplayPars(alpha = .5)))
+
+# bcftools view agpv4_chr3_agpv3_140-160M.vcf.gz -r 3:151300000-15140000 -Ov -o agpv4_chr3_151300000-151400000.vcf
+# scp -P 2022 farm:/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz ~/Desktop
+

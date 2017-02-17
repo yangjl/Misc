@@ -9,6 +9,7 @@ output: pdf_document
 ### setid
 ```
 bcftools annotate --set-id +'%CHROM\_%POS\_%REF\_%FIRST_ALT' merged_flt_ad_c3.vcf.gz -r 3:140088574-160091550 -Oz -o chr3_agpv3_140-160M.vcf.gz
+
 ```
 ### get BED file
 ```
@@ -49,6 +50,10 @@ write.table(outd[outd$V1 == outd$newchr, c("V4", "newe")], "~/Documents/Github/M
 plink -vcf chr3_agpv3_140-160M.vcf.gz --keep-allele-order --make-bed --out chr3_agpv3_140-160M
 plink -bfile chr3_agpv3_140-160M --update-map agpv4_chr3_agpv3_140-160M.bed --make-bed --out agpv4_chr3_agpv3_140-160M
 plink -bfile agpv4_chr3_agpv3_140-160M --recode vcf-iid --out agpv4_chr3_agpv3_140-160M
+
+plink -bfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --recode vcf-iid --out agpv4_chr3_agpv3_151M
+
+bcftools view agpv4_chr3_agpv3_140-160M.vcf.gz -r 3:151229000-151432000 -m2 -M2 -Ov -o agpv4_chr3_agpv3_151M.vcf
 ```
 
 ### BGZIP and Idx
