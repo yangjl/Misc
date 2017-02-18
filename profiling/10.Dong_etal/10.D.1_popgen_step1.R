@@ -33,14 +33,19 @@ d282 <- ind[grep("282set", ind)]
 BP <- 5000
 # AGPv4 annotation
 # (Chr3: 151329451..151332389)
+a1 <- gsub("282set_", "", d282$Prefixed_Taxon)
 a2 <- ind[grep("BKN", ind)]
 a3 <- ind[grep("^TI", ind)]
-gdat <- readVCF("/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz", numcols=10000, tid="3",
-                samplenames=c(a1, a2, a3),  
-                include.unknown=TRUE,
-                frompos = 151329451 - BP, topos = 151332389 + BP, approx=FALSE, out="", 
-                parallel=FALSE, gffpath=FALSE)
+getstat <- function(start=151329451 - BP, end= 151329451, sample=a1){
+    gdat <- readVCF("/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz", numcols=10000, tid="3",
+                    samplenames= sample,  
+                    include.unknown=TRUE,
+                    frompos = start, topos = end, approx=FALSE, out="", 
+                    parallel=FALSE, gffpath=FALSE)
+    return(get.sum.data(gdat))
+}
 
+getstat(start=151329451 - BP, end= 151329451, sample=a1)
 
 gdat@n.sites
 gdat@region.names

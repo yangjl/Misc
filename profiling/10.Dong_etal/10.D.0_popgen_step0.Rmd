@@ -93,6 +93,8 @@ sample <- read.table("largedata/pheno_282_dong.txt", header=TRUE)
 ```
 ### change to unique ID "_nrow()"
 plink -tfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --keep set282.txt --recode transpose --out agpv4_chr3_agpv3_151M_282set
+
+plink -tfile agpv4_chr3_agpv3_151M_282set --recode vcf-iid --out agpv4_chr3_agpv3_151M_282set
 ```
 
 ### BGZIP and Idx

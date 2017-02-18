@@ -1,0 +1,124 @@
+---
+title: "HKA.test"
+author: "Jinliang Yang"
+date: "2/17/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, eval=FALSE}
+
+library(PopGenome)
+getstat <- function(start=151329451 - BP, end= 151329451, sample=a1){
+    gdat <- readVCF("/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz", numcols=10000, tid="3",
+                    samplenames= sample,  
+                    include.unknown=TRUE,
+                    frompos = start, topos = end, approx=FALSE, out="", 
+                    parallel=FALSE, gffpath=FALSE)
+    return(get.sum.data(gdat))
+}
+
+vcf_handle <- .Call("VCF_open",filename="/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz")
+ind <- .Call("VCF_getSampleNames",vcf_handle)
+
+BP <- 5000
+# AGPv4 annotation
+# (Chr3: 151329451..151332389)
+taxa <- read.csv("data/hmp3_taxa.csv")
+table(taxa$Dataset)
+
+line <- subset(taxa, !(Dataset %in% "German") & !(Dataset %in% "CIMMYT/BGI"))
+length(unique(line$Prefixed_Taxon))
+d282 <- subset(line, Category %in% " Improved" & Dataset %in% "282-4x") #
+
+a1 <- gsub("282set_", "", d282$Prefixed_Taxon)
+a2 <- ind[grep("BKN", ind)]
+a3 <- ind[grep("^TI", ind)]
+
+BP = 5000
+out1_a1 <- getstat(start=151329451 - BP, end= 151329451, sample=a1)
+out1_a2 <- getstat(start=151329451 - BP, end= 151329451, sample=a3)
+out2_a1 <- getstat(start=151329451, end= 151332389, sample=a1)
+out2_a2 <- getstat(start=151329451, end= 151332389, sample=a3)
+out3_a1 <- getstat(start=151332389, end= 151332389 + BP, sample=a1)
+out3_a2 <- getstat(start=151332389, end= 151332389 + BP, sample=a3)
+
+df <- data.frame(locusid=c("up", "tru1", "down"), 
+                 inh=1, 
+                 seqlen1=c(5001, 2938, 5000), seqlen2=c(5000, 2938, 5000), 
+                 seqlen=c(5001, 2938, 5000), 
+                 seq1=length(a1), seq2=length(a2), 
+                 snp1=c(out1_a1[2], out2_a1[2], out3_a1[2]), 
+                 snp2=c(out1_a2[2], out2_a2[2], out3_a2[2]))
+
+```
+
+## HKA test
+
+
+```{r}
+line1 <- "HKA program test data"
+line2 <- 5 # number of loci
+line3 <- c("maize", "teosinte")
+
+#locus identifier
+#inheritance scalar (1.0 for autosomal 0.75 for X linked 0.25 for extrachromosomal or Y)
+#mean sequence length for species 1
+ #mean sequence length species 2
+ #mean sequence length in comparisons between species
+ # of sequences for species 1
+ # of sequences for species 2
+ # of polymorphic sites species1
+ # of polymorphic sites species2
+ # mean pairwise divergence between species
+ #Tajima D  for species 1  (Tajima, 1989)
+ #Tajima D  for species 2  (Tajima, 1989)
+ #Fu & Li D (rooted) for species 1  (Fu and Li, 1993)
+ #Fu & Li D (rooted) for species 2 (Fu and Li, 1993)
+df <- data.frame(locusid=c("up", "tru1", "down"), 
+                 inh=1, 
+                 seqlen1=c(5000, 2938, 5000), seqlen2=c(5000, 2938, 5000), 
+                 seqlen=c(5000, 2938, 5000), 
+                 seq1=270, seq2=20, 
+                 snp1=c(), snp2)
+```
+
+
+```
+Input Data File Format:
+Line 1  - a line of text.  If desired, up to 10 extra lines of commentary can be added following line 1. Each additional line of commentary must have a '#' at the very beginning of the line. All comment lines will be reproduced in the output file.
+line 2 - the number of loci = numloci
+line 3 - the names of the two species, species 1 and species 2
+the next numloci lines each have the following items
+ locus identifier
+ inheritance scalar (1.0 for autosomal 0.75 for X linked 0.25 for extrachromosomal or Y)
+ mean sequence length for species 1
+ mean sequence length species 2
+ mean sequence length in comparisons between species
+ # of sequences for species 1
+ # of sequences for species 2
+ # of polymorphic sites species1
+ # of polymorphic sites species2
+ mean pairwise divergence between species
+ Tajima D  for species 1  (Tajima, 1989)
+ Tajima D  for species 2  (Tajima, 1989)
+ Fu & Li D (rooted) for species 1  (Fu and Li, 1993)
+ Fu & Li D (rooted) for species 2 (Fu and Li, 1993)
+ 
+Thus the basic format is of a table.  With K loci the table would have K rows. Each row begins with a locus name and is followed by 13 numbers.
+ 
+If one species has only a single sequence at one, at one or any of the loci,  then that data set should be reduced to just one sequence for all of the loci for that species.  In addition the species represented by just a single sequence for each locus should be species 2.
+ 
+Inclusion of Tajima's and Fu&Li's statistics is optional and they need not be included. However if they are the program will test their significance.  It will also conduct tests of the overall mean among these statistics and of their variances among the loci.
+ 
+If tests of D statistics are desired, but the values for some loci are not known or are not calculable, then the corresponding value in the input table should be set to -10 or less. 
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+
