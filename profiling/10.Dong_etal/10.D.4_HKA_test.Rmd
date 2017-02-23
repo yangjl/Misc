@@ -10,15 +10,19 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, eval=FALSE}
-
+# https://bio.cst.temple.edu/~hey/program_files/HKA/HKA_Documentation.htm
 library(PopGenome)
-getstat <- function(start=151329451 - BP, end= 151329451, sample=a1){
-    gdat <- readVCF("/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz", numcols=10000, tid="3",
-                    samplenames= sample,  
+getstat <- function(start=151329451 - BP, end= 151329451, sample1=a1, sample2=a3){
+    gdat <- readVCF("/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz",
+                    numcols=10000, tid="3", 
+                    samplenames= c(sample1, sample2),  
                     include.unknown=TRUE,
                     frompos = start, topos = end, approx=FALSE, out="", 
                     parallel=FALSE, gffpath=FALSE)
     
+    ### assign populations
+    gdat <- set.populations(gdat, list(sample1, sample2), diploid=TRUE)
+
     out <- neutrality.stats(gdat)
     out <- get.sum.data(gdat)
     return(c(out@Tajima.D, out@Fu.Li.D, get.sum.data(gdat)) )

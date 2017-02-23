@@ -56,7 +56,7 @@ plink -bfile agpv4_chr3_agpv3_140-160M --recode vcf-iid --out agpv4_chr3_agpv3_1
 ### change to unique ID "_nrow()"
 plink -bfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --keep set282.txt --recode vcf-iid --out agpv4_chr3_agpv3_151M_282set
 
-plink -bfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --r --ld-window-r2 0.3 --out agpv4_chr3_agpv3_151M
+plink -bfile agpv4_chr3_agpv3_140-160M --chr 3  --from-kb 151229 --to-kb 151432 --r2 --out agpv4_chr3_agpv3_151M
 
 bcftools view agpv4_chr3_agpv3_151M.vcf -m2 -M2 -Ov -o agpv4_chr3_agpv3_151M_2snp.vcf
 bcftools query agpv4_chr3_agpv3_140-160M.vcf.gz -f '%CHROM\t%POS\t%POS\t%ID[\t%GT]\n' > chr3_agpv3_140-160M.txt
@@ -86,6 +86,22 @@ myr <- subset(r, BP_A == 151322011 | BP_B == 151322011)
 sample <- read.table("largedata/pheno_282_dong.txt", header=TRUE)
 
 
+p <- read.table("largedata/pheno_282_dong.txt", header=T)
+sub <- subset(tfam, toupper(as.character(V2)) %in% p$id)
+sub <- subset(sub, V1 %in% "282set")
+write.table(sub[, 1:2], "~/dbcenter/HapMap/HapMap3/set282.txt", row.names=FALSE, quote=FALSE, col.names=FALSE)
+
+
+
+### change sample id
+tfam <- read.table("~/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.tfam")
+p <- read.table("largedata/pheno_282_dong.txt", header=T)
+sub <- subset(tfam, toupper(as.character(V2)) %in% p$id)
+sub <- subset(sub, V1 %in% "282set")
+
+idx <- grep("TIL", tfam$V2)
+sub2 <- tfam[idx, ]
+write.table(rbind(sub, sub2)[, 1:2], "~/dbcenter/HapMap/HapMap3/maize249_teo20.txt", row.names=FALSE, quote=FALSE, col.names=FALSE)
 ```
 
 
@@ -95,6 +111,8 @@ sample <- read.table("largedata/pheno_282_dong.txt", header=TRUE)
 plink -tfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --keep set282.txt --recode transpose --out agpv4_chr3_agpv3_151M_282set
 
 plink -tfile agpv4_chr3_agpv3_151M_282set --recode vcf-iid --out agpv4_chr3_agpv3_151M_282set
+
+plink -tfile agpv4_chr3_agpv3_151M_282set --r2 --ld-window-r2 0 --out agpv4_chr3_agpv3_151M 
 ```
 
 ### BGZIP and Idx
@@ -105,6 +123,58 @@ bgzip agpv4_chr3_agpv3_140-160M.vcf
 tabix -p vcf agpv4_chr3_agpv3_140-160M.vcf.gz
 ```
 
+
+
+```
+### change to unique ID "_nrow()"
+plink -tfile agpv4_chr3_agpv3_140-160M --chr 3 --from-kb 151229 --to-kb 151432 --keep maize249_teo20.txt --recode transpose --out agpv4_chr3_agpv3_151M_maize_teo
+
+plink -tfile agpv4_chr3_agpv3_151M_maize_teo --recode vcf-iid --out agpv4_chr3_agpv3_151M_maize_teo
+
+bcftools view agpv4_chr3_agpv3_151M_maize_teo.vcf -m2 -M2 -v snps -Oz -o agpv4_chr3_agpv3_151M_maize_teo_bisnp.vcf.gz
+bcftools query -f '%CHROM\t%POS[\t%SAMPLE=%TGT]\n' agpv4_chr3_agpv3_151M_maize_teo_bisnp.vcf.gz > agpv4_bisnp_151m.txt
+```
+
+## Prepare HapMap3 data for HKA test
+```{r, eval=FALSE}
+
+library("data.table")
+d <- fread("~/dbcenter/HapMap/HapMap3/agpv4_bisnp_151m.txt", data.table=FALSE)
+
+nm <- as.vector(t(d[1,]))
+nm <- gsub("=.*", "", nm)
+nm[1:2] <- c("snpid", "AGPv4")
+
+names(d) <- nm
+
+for(i in 3:ncol(d)){
+    d[, i] <- gsub(".*=", "", d[, i])
+}
+
+data <- data.frame(lapply(d, function(x) {gsub("\\.\\/\\.", "N/N", x)}))
+
+data$snpid <- paste(data$snpid, data$AGPv4, sep="_")
+
+d1 <- data.frame(lapply(data, function(x) {gsub("\\/.", "", x)}))
+d2 <- data.frame(lapply(data, function(x) {gsub(".\\/", "", x)}))
+
+n1 <- paste0(names(d1), "_A")
+n2 <- paste0(names(d2), "_B")
+
+names(d1)[3:ncol(d1)] <- n1[3:length(n1)]
+names(d2)[3:ncol(d2)] <- n2[3:length(n2)]
+
+out <- cbind(d1, d2[, -1:-2])
+out <- out[ , c("snpid", "AGPv4",  sort(names(out)[-1:-2]))]
+write.table(out, "largedata/HapMap3.txt", sep=" ", row.names=FALSE, quote=FALSE)
+
+write.table(out[1:10, 1:20], "largedata/HapMap3_test.txt", sep=" ", row.names=FALSE, quote=FALSE)
+
+
+
+
+
+```
 
 
 

@@ -42,10 +42,25 @@ getstat <- function(start=151329451 - BP, end= 151329451, sample=a1){
                     include.unknown=TRUE,
                     frompos = start, topos = end, approx=FALSE, out="", 
                     parallel=FALSE, gffpath=FALSE)
-    return(get.sum.data(gdat))
+    
+    #return(diversity.stats(gdat))
+    #return(get.sum.data(gdat))
+    return(gdat)
 }
 
-getstat(start=151329451 - BP, end= 151329451, sample=a1)
+BP = 0
+gdat <- getstat(start=151329451 - BP, end= 151332389, sample=a1)
+# Statistics
+gdat <- diversity.stats(gdat)
+d <- gdat@nuc.diversity.within/(151332389 - 151329451)
+
+# Statistics
+slide <- sliding.window.transform(gdat, 100, 25, type=2)
+slide <- diversity.stats(slide)
+nucdiv <- slide@nuc.diversity.within
+# the values have to be normalized by the number of nucleotides in each window
+nucdiv <- nucdiv/100
+head(nucdiv)
 
 gdat@n.sites
 gdat@region.names

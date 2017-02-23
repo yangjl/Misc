@@ -25,6 +25,7 @@ legend("topright", c("Maize","Teosinte"), col=c("darkgreen","red"), lty=c(1,2), 
 #axis(1,c(1,1000,2000,3000,4000,5000), c("0","10","20","30","40","50"))
 abline(v=204, col="grey")
 abline(v=514-200, col="grey")
+abline(h=0.007215115, col="grey")
 axis(1,c(1,100,200,300,400,500), 
      round(c(start,start+25*100,start+25*200,start+25*300,start+25*400,start+25*500)/1000))
 
@@ -46,6 +47,7 @@ legend("topright", c("Maize","Teosinte"), col=c("darkgreen","red"), lty=c(1,2), 
 #axis(1,c(1,1000,2000,3000,4000,5000), c("0","10","20","30","40","50"))
 abline(v=204, col="grey")
 abline(v=514-200, col="grey")
+abline(h=0.007215115, col="grey")
 axis(1,c(1,100,200,300,400,500), 
      round(c(start,start+25*100,start+25*200,start+25*300,start+25*400,start+25*500)/1000))
 
