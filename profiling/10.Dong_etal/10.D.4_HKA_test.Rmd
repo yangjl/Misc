@@ -22,6 +22,14 @@ getstat <- function(start=151329451 - BP, end= 151329451, sample1=a1, sample2=a3
     
     ### assign populations
     gdat <- set.populations(gdat, list(sample1, sample2), diploid=TRUE)
+    
+    # Statistics
+    gdat <- diversity.stats(gdat)
+    d1 <- get.diversity(gdat)
+    d <- gdat@nuc.diversity.between
+    
+    F_ST.stats(gdat)
+
 
     out <- neutrality.stats(gdat)
     out <- get.sum.data(gdat)
