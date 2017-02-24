@@ -17,27 +17,30 @@ LocusID L S n D startingtheta inheritancescalar
 ```{r}
 # https://github.com/rossibarra/MLHKA/blob/master/README.pdf
 #AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
-
+library(data.table)
 d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
 
 BP = 50000
 subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
+subd$div <- subd$divergence * subd$div_sites
 
 #LocusID L S n D startingtheta inheritancescalar
-df <- subd[, c("chr", "winstart", "winend", "seqbp", "SMZ", "div_sites", "ThetaPiMZ")]
+df <- subd[, c("chr", "winstart", "winend", "seqbp", "SMZ", "div", "ThetaPiMZ")]
 df <- subset(df, !is.na(div_sites))
 df$lid <- paste0("Chr", df$chr, "g", df$winstart)
 df$n <- 37
 df$inheritancescalar <- 1
 
-df <- df[, c("lid", "seqbp", "SMZ", "n", "div_sites", "ThetaPiMZ", "inheritancescalar")]
 
-cat(c(nrow(df), 0, 23.2, "\n"), 
+df$div <- round(df$div, 0)
+df <- df[, c("lid", "seqbp", "SMZ", "n", "div", "ThetaPiMZ", "inheritancescalar")]
+df <- subset(df, !is.na(div))
+cat(c(nrow(df), 0, 1, "\n"), 
     file="largedata/infile0.txt", sep="\t")
 write.table(df, "largedata/infile0.txt", append = TRUE, row.names=FALSE, 
             quote=FALSE, sep="\t", col.names=FALSE)
 
-cat(c(nrow(df), 2, c("Chr3g150040001", "Chr3g150050001"), 23.2, "\n"), 
+cat(c(nrow(df), 2, c("Chr3g150040001", "Chr3g150050001"), 1, "\n"), 
     file="largedata/infile2.txt", sep="\t")
 write.table(df, "largedata/infile2.txt", append = TRUE, row.names=FALSE, 
             quote=FALSE, sep="\t", col.names=FALSE)

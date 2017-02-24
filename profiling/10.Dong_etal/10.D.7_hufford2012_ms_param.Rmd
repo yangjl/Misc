@@ -27,6 +27,14 @@ sub <- subset(d, seqbp >= 5000)
 theta_teo <- sub[, c("seqbp", "ThetaWteo", "ThetaPiteo", "ThetaHteo", "S_rhoteo", "rho_teo")]
 write.table(theta_teo, "largedata/teo_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
 
+theta_mz <- sub[, c("seqbp", "ThetaWMZ", "ThetaPiMZ", "ThetaHMZ", "S_rhoMZ", "rho_MZ")]
+write.table(theta_teo, "largedata/MZ_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
+
+sub2 <- subset(d, chr == 3 & winstart > 150040000 & winend <= 150062250)
+goi <- sub2[, c("seqbp","ThetaWteo", "ThetaPiteo", "ThetaHteo", "S_rhoteo", "rho_teo", "ThetaWMZ", "ThetaPiMZ", "ThetaHMZ", "S_rhoMZ", "rho_MZ")]
+write.table(goi, "largedata/gene_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
+
+
 ```
 
 ### 3. i need 3) sample size in maize and teosinte. 
