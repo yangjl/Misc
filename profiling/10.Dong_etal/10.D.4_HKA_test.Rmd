@@ -9,6 +9,71 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
+## MLHKA
+LocusID L S n D startingtheta inheritancescalar
+
+```{r}
+# https://github.com/rossibarra/MLHKA/blob/master/README.pdf
+#AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
+
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
+
+BP = 50000
+subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
+
+#LocusID L S n D startingtheta inheritancescalar
+df <- subd[, c("chr", "winstart", "winend", "seqbp", "SMZ", "div_sites", "ThetaPiMZ")]
+df <- subset(df, !is.na(div_sites))
+df$lid <- paste0("Chr", df$chr, "g", df$winstart)
+df$n <- 37
+df$inheritancescalar <- 1
+
+df <- df[, c("lid", "seqbp", "SMZ", "n", "div_sites", "ThetaPiMZ", "inheritancescalar")]
+
+cat(c(nrow(df), 0, 23.2, "\n"), 
+    file="largedata/infile0.txt", sep="\t")
+write.table(df, "largedata/infile0.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+cat(c(nrow(df), 2, c("Chr3g150040001", "Chr3g150050001"), 23.2, "\n"), 
+    file="largedata/infile2.txt", sep="\t")
+write.table(df, "largedata/infile2.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+```
+
+
+## Run MLHKA
+```{r}
+
+#MLHKA -i infile.txt -o outfile.txt -s 16397 -c 100000
+
+library(farmeR)
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka0.sh",
+  shcode = "cd largedata; MLHKA -i infile0.txt -o outfile0.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka0", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 1))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 8G --ntasks=1 --time 48:00:00 slurm-scripts/run_mkhka0.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka2.sh",
+  shcode = "MLHKA -i largedata/infile2.txt -o largedata/outfile2.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka2", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 1))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 8G --ntasks=1 --time 48:00:00 slurm-scripts/run_mkhka2.sh
+```
+
+
+
+
+
+
+
+
+
 ```{r, eval=FALSE}
 # https://bio.cst.temple.edu/~hey/program_files/HKA/HKA_Documentation.htm
 library(PopGenome)
@@ -124,6 +189,9 @@ cat(c(line1,
 write.table(df, "largedata/hka_input2.txt", sep="\t", append = TRUE, row.names=FALSE, col.names=FALSE, quote=FALSE)
 
 ```
+
+
+
 
 ## HKA test
 

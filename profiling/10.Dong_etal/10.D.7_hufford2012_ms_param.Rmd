@@ -1,0 +1,41 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+## Load data from Hufford_etal_2012
+```{r}
+library(data.table)
+library(tidyr)
+#AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
+
+```
+
+## Parameters for MS
+
+### 1. i need 1) genome-wide theta per bp from teosinte, from windows with >50% of the bp sequenced. 
+### 2. i need 2) the estimate of rho per bp from those same windows in teosinte.
+```{r, eval=FALSE}
+library(data.table)
+library(tidyr)
+#AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
+
+sub <- subset(d, seqbp >= 5000)
+theta_teo <- sub[, c("seqbp", "ThetaWteo", "ThetaPiteo", "ThetaHteo", "S_rhoteo", "rho_teo")]
+write.table(theta_teo, "largedata/teo_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
+
+```
+
+### 3. i need 3) sample size in maize and teosinte. 
+maize = 35
+teosinte = 17
+
+### 4. and i need the length of the window you care about 
+(how many bp were sequenced in the window with the gene of interest)
+
+The gene spans two windows, one seqbp = 5494, the other seqbp = 1823.
+
+

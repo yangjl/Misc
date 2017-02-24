@@ -27,5 +27,12 @@ abline(v=log(tru1$ThetaPi/tru1$seqbp))
 abline(v=log(0.001318671))
 
 
+library(data.table)
+#AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
+BP = 100000
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt")
 
+subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150049274 + BP)
+
+tot <- nrow(d)
 
