@@ -62,6 +62,13 @@ plot(res8.mm, main="10 kernel weight", pch=16, col="cadetblue")
 BP <- 20000
 
 res2 <- subset(results(res2.mm), !is.na(P1df))
+pdf("graphs/fig3.pdf", width=8, height=4)
+BP <- 50000
+res2 <- subset(results(res2.mm), !is.na(P1df))
+get_plot(res=res2, mart=zm, BP, pos=c(151328862 - BP, 151332856 + BP), 
+         cutoff=10^-2.8, trait="Number of Tillering Plants", ylim=c(0, 5))
+dev.off()
+
 get_plot(res=res2, mart=zm, BP, pos=c(151328862 - BP, 151332856 + BP), 
          trait="Number of Tillering Plants", ylim=c(0, 5))
 
@@ -101,7 +108,7 @@ bed <- read.table("largedata/output_peak_chr3.bed")
 subset(bed, V2 > 150328862 & V3 < 153469526)
 
 ##############    
-get_plot <- function(res, mart=zm, BP, pos=c(151328862 - BP, 151332856 + BP), trait, ylim=c(0, 7)){
+get_plot <- function(res, mart=zm, BP, pos=c(151328862 - BP, 151332856 + BP), cutoff=NULL, trait, ylim=c(0, 7)){
     
     res <- subset(res, Position > pos[1] & Position < pos[2])
     res$qval <- p.adjust(res$P1df, method = "fdr")
@@ -113,6 +120,9 @@ get_plot <- function(res, mart=zm, BP, pos=c(151328862 - BP, 151332856 + BP), tr
     }else{
         res$l <- abs(res$qval - 0.05)
         mycutoff <- res[res$l == min(res$l),]$P1df
+    }
+    if(!is.null(cutoff)){
+        mycutoff <- cutoff
     }
     
     seg <- makeSegmentation(start=pos[1], end= pos[2], value= -log10(mycutoff)[1],

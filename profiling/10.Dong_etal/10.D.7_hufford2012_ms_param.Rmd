@@ -28,11 +28,16 @@ theta_teo <- sub[, c("seqbp", "ThetaWteo", "ThetaPiteo", "ThetaHteo", "S_rhoteo"
 write.table(theta_teo, "largedata/teo_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
 
 theta_mz <- sub[, c("seqbp", "ThetaWMZ", "ThetaPiMZ", "ThetaHMZ", "S_rhoMZ", "rho_MZ")]
-write.table(theta_teo, "largedata/MZ_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
+
+
+write.table(theta_mz, "largedata/MZ_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
 
 sub2 <- subset(d, chr == 3 & winstart > 150040000 & winend <= 150062250)
 goi <- sub2[, c("seqbp","ThetaWteo", "ThetaPiteo", "ThetaHteo", "S_rhoteo", "rho_teo", "ThetaWMZ", "ThetaPiMZ", "ThetaHMZ", "S_rhoMZ", "rho_MZ")]
 write.table(goi, "largedata/gene_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
+
+out <- cbind(theta_teo, theta_mz[, -1])
+write.table(out, "largedata/mz_teo_theta.csv", sep=",", row.names=FALSE, quote=FALSE)
 
 
 ```
