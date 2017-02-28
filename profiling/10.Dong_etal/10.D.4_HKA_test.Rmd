@@ -77,6 +77,13 @@ set_farm_job(slurmsh = "slurm-scripts/run_mkhka2.sh",
 
 
 
+
+
+
+
+
+
+
 ```{r, eval=FALSE}
 # https://bio.cst.temple.edu/~hey/program_files/HKA/HKA_Documentation.htm
 library(PopGenome)
@@ -196,67 +203,5 @@ write.table(df, "largedata/hka_input2.txt", sep="\t", append = TRUE, row.names=F
 
 
 
-## HKA test
-
-
-```{r}
-
-
-#locus identifier
-#inheritance scalar (1.0 for autosomal 0.75 for X linked 0.25 for extrachromosomal or Y)
-#mean sequence length for species 1
- #mean sequence length species 2
- #mean sequence length in comparisons between species
- # of sequences for species 1
- # of sequences for species 2
- # of polymorphic sites species1
- # of polymorphic sites species2
- # mean pairwise divergence between species
- #Tajima D  for species 1  (Tajima, 1989)
- #Tajima D  for species 2  (Tajima, 1989)
- #Fu & Li D (rooted) for species 1  (Fu and Li, 1993)
- #Fu & Li D (rooted) for species 2 (Fu and Li, 1993)
-df <- data.frame(locusid=c("up", "tru1", "down"), 
-                 inh=1, 
-                 seqlen1=c(5000, 2938, 5000), seqlen2=c(5000, 2938, 5000), 
-                 seqlen=c(5000, 2938, 5000), 
-                 seq1=270, seq2=20, 
-                 snp1=c(), snp2)
-```
-
-
-```
-Input Data File Format:
-Line 1  - a line of text.  If desired, up to 10 extra lines of commentary can be added following line 1. Each additional line of commentary must have a '#' at the very beginning of the line. All comment lines will be reproduced in the output file.
-line 2 - the number of loci = numloci
-line 3 - the names of the two species, species 1 and species 2
-the next numloci lines each have the following items
- locus identifier
- inheritance scalar (1.0 for autosomal 0.75 for X linked 0.25 for extrachromosomal or Y)
- mean sequence length for species 1
- mean sequence length species 2
- mean sequence length in comparisons between species
- # of sequences for species 1
- # of sequences for species 2
- # of polymorphic sites species1
- # of polymorphic sites species2
- mean pairwise divergence between species
- Tajima D  for species 1  (Tajima, 1989)
- Tajima D  for species 2  (Tajima, 1989)
- Fu & Li D (rooted) for species 1  (Fu and Li, 1993)
- Fu & Li D (rooted) for species 2 (Fu and Li, 1993)
- 
-Thus the basic format is of a table.  With K loci the table would have K rows. Each row begins with a locus name and is followed by 13 numbers.
- 
-If one species has only a single sequence at one, at one or any of the loci,  then that data set should be reduced to just one sequence for all of the loci for that species.  In addition the species represented by just a single sequence for each locus should be species 2.
- 
-Inclusion of Tajima's and Fu&Li's statistics is optional and they need not be included. However if they are the program will test their significance.  It will also conduct tests of the overall mean among these statistics and of their variances among the loci.
- 
-If tests of D statistics are desired, but the values for some loci are not known or are not calculable, then the corresponding value in the input table should be set to -10 or less. 
-```
-
-## Including Plots
-
-You can also embed plots, for example:
 
 

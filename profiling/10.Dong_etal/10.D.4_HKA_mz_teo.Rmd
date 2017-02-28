@@ -1,0 +1,142 @@
+---
+title: "HKA.test"
+author: "Jinliang Yang"
+date: "2/17/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## MLHKA
+LocusID L S n D startingtheta inheritancescalar
+
+```{r}
+# https://github.com/rossibarra/MLHKA/blob/master/README.pdf
+#AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
+library(data.table)
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
+
+BP = 50000
+subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
+subd$div <- subd$divergence * subd$div_sites
+
+#LocusID L S n D startingtheta inheritancescalar
+df <- subd[, c("chr", "winstart", "winend", "seqbp", "SMZ", "div", "ThetaPiMZ")]
+df <- subset(df, !is.na(div))
+df$lid <- paste0("Chr", df$chr, "g", df$winstart)
+df$n <- 35
+df$inheritancescalar <- 1
+
+
+df$div <- round(df$div, 0)
+df <- df[, c("lid", "seqbp", "SMZ", "n", "div", "ThetaPiMZ", "inheritancescalar")]
+df <- subset(df, !is.na(div))
+cat(c(nrow(df), 0, 1, "\n"), 
+    file="largedata/infile0.txt", sep="\t")
+write.table(df, "largedata/infile0.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+cat(c(nrow(df), 2, c("Chr3g150040001", "Chr3g150050001"), 1, "\n"), 
+    file="largedata/infile2.txt", sep="\t")
+write.table(df, "largedata/infile2.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+
+########### teosinte
+#LocusID L S n D startingtheta inheritancescalar
+df2 <- subd[, c("chr", "winstart", "winend", "seqbp", "Steo", "div", "ThetaPiteo")]
+df2 <- subset(df2, !is.na(div))
+df2$lid <- paste0("Chr", df2$chr, "g", df2$winstart)
+df2$n <- 17
+df2$inheritancescalar <- 1
+
+
+df2$div <- round(df2$div, 0)
+df2 <- df2[, c("lid", "seqbp", "Steo", "n", "div", "ThetaPiteo", "inheritancescalar")]
+
+cat(c(nrow(df2), 0, 1, "\n"), 
+    file="largedata/infile0_teo.txt", sep="\t")
+write.table(df2, "largedata/infile0_teo.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+cat(c(nrow(df2), 2, c("Chr3g150040001", "Chr3g150050001"), 1, "\n"), 
+    file="largedata/infile2_teo.txt", sep="\t")
+write.table(df2, "largedata/infile2_teo.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+```
+
+
+## Run MLHKA
+```{r}
+
+#MLHKA -i infile.txt -o outfile.txt -s 16397 -c 100000
+
+library(farmeR)
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka0.sh",
+  shcode = "cd largedata; MLHKA -i infile0.txt -o outfile0.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka0", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 2))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --time 48:00:00 slurm-scripts/run_mkhka0.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka2.sh",
+  shcode = "MLHKA -i largedata/infile2.txt -o largedata/outfile2.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka2", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 2))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --time 48:00:00 slurm-scripts/run_mkhka2.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka0_teo.sh",
+  shcode = "cd largedata; MLHKA -i infile0_teo.txt -o outfile0_teo.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka0_teo", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 2))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --time 48:00:00 slurm-scripts/run_mkhka0_teo.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka2_teo.sh",
+  shcode = "cd largedata; MLHKA -i infile2_teo.txt -o outfile2_teo.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka2_teo", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 2))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --time 48:00:00 slurm-scripts/run_mkhka2_teo.sh
+```
+
+
+
+### get P-value
+```{r}
+a0 <- read.table("largedata/outfile0.txt", header=T)
+a2 <- read.table("largedata/outfile2.txt", header=T, skip = 1)
+    
+t1 <- 2*(log(a0[,9]) - log(a2[,9]))
+t2 <- 2*abs(log(a0[,11]) - log(a2[,11]))
+
+dchisq(t1, df=1)
+dchisq(t2, df=1)
+
+hist(rchisq(n=1000, df=2))
+
+
+a0 <- read.table("largedata/outfile0_teo.txt", header=T)
+a2 <- read.table("largedata/outfile2_teo.txt", header=T, skip = 1)
+    
+t1 <- 2*(log(a0[,9]) - log(a2[,9]))
+t2 <- 2*abs(log(a0[,11]) - log(a2[,11]))
+
+dchisq(t1, df=1)
+dchisq(t2, df=1)
+
+```
+
+
+
+
+
+
+
+
+

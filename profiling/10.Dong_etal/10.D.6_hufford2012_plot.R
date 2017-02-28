@@ -46,25 +46,12 @@ p2 <- ggplot(out, aes(x=winstart, y=pi, colour=factor(pop, levels=c("ThetaPiMZ",
           legend.text = element_text(size=fsize))
 p2
 
-p1 <- ggplot(out, aes(x=x, y=Tajima.D, colour=factor(pop, levels=c("Maize", "Teosinte")) )) +
-    labs(colour="") +
-    theme_bw() +
-    xlab("Chr3 (bp)") +
-    ylab("Tajima'D") +
-    scale_color_manual(values=c("#458b74", "#8b2323")) +
-    #scale_linetype_manual(values=lty1) +
-    guides(colour = guide_legend()) +
-    geom_smooth(method="loess", span=0.5) +
-    geom_hline(yintercept = 0.5334655, col="#458b74") +
-    geom_hline(yintercept = 0.3942796, col="#8b2323") +
-    geom_vline(xintercept = c(151329451, 151332389), col="grey") +
-    theme(axis.text.y = element_text(angle = 90, hjust = 0.5),
-          axis.text=element_text(size=fsize),
-          axis.title=element_text(size=fsize, face="bold"),
-          legend.title = element_text(size=fsize, face="bold"),
-          legend.text = element_text(size=fsize))
-p1
+mean(d$ThetaPiMZ, na.rm=T) #0.004533269
+mean(d$ThetaPiteo, na.rm=T) #0.005549941
 
+# teosinte
+0.005549941 - mean(c(0.002633691, 0.002250982))/0.005549941 #43%
+0.004533269 - mean(c(0.002038096, 0.002038096))/0.004533269 #45%
 
 library(tidyr)
 nucdiv <- read.csv("largedata/agpv4_pai_tru1_win100_25.csv")
