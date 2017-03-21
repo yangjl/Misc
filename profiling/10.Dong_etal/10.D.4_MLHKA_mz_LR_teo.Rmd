@@ -67,6 +67,28 @@ cat(c(nrow(df2), 2, c("Chr3g150040001", "Chr3g150050001"), 1, "\n"),
     file="largedata/infile2_teo.txt", sep="\t")
 write.table(df2, "largedata/infile2_teo.txt", append = TRUE, row.names=FALSE, 
             quote=FALSE, sep="\t", col.names=FALSE)
+
+########### Landrace
+#LocusID L S n D startingtheta inheritancescalar
+df3 <- subd[, c("chr", "winstart", "winend", "seqbp", "SLR", "div", "ThetaPiLR")]
+df3 <- subset(df3, !is.na(div))
+df3$lid <- paste0("Chr", df3$chr, "g", df3$winstart)
+df3$n <- 23
+df3$inheritancescalar <- 1
+
+
+df3$div <- round(df3$div, 0)
+df3 <- df3[, c("lid", "seqbp", "SLR", "n", "div", "ThetaPiLR", "inheritancescalar")]
+
+cat(c(nrow(df3), 0, 1, "\n"), 
+    file="largedata/infile3_LR.txt", sep="\t")
+write.table(df3, "largedata/infile0_LR.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+cat(c(nrow(df3), 2, c("Chr3g150040001", "Chr3g150050001"), 1, "\n"), 
+    file="largedata/infile2_LR.txt", sep="\t")
+write.table(df3, "largedata/infile2_LR.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
 ```
 
 
@@ -103,6 +125,20 @@ set_farm_job(slurmsh = "slurm-scripts/run_mkhka2_teo.sh",
 
 ###>>> In this path: cd /home/jolyang/Documents/Github/Misc
 ###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --time 48:00:00 slurm-scripts/run_mkhka2_teo.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka0_LR.sh",
+  shcode = "cd largedata; MLHKA -i infile0_LR.txt -o outfile0_LR.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka0_LR", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 2))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --time=48:00:00 slurm-scripts/run_mkhka0_LR.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka2_LR.sh",
+  shcode = "cd largedata; MLHKA -i infile2_LR.txt -o outfile2_LR.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka3_LR", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 2))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 16G --ntasks=2 --exclude=bigmem1 --time=48:00:00 slurm-scripts/run_mkhka2_LR.sh
 ```
 
 
@@ -111,7 +147,8 @@ set_farm_job(slurmsh = "slurm-scripts/run_mkhka2_teo.sh",
 ```{r}
 a0 <- read.table("largedata/outfile0.txt", header=T)
 a2 <- read.table("largedata/outfile2.txt", header=T, skip = 1)
-    
+a3 <- read.table("largedata/outfile2_LR.txt", header=T, skip = 1)
+     
 t1 <- 2*(log(a0[,9]) - log(a2[,9]))
 t2 <- 2*abs(log(a0[,11]) - log(a2[,11]))
 
