@@ -1,19 +1,51 @@
+### Jinliang Yang
+### 03-20-2017
 
 library(data.table)
 library(tidyr)
+library(ggplot2)
 #AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
 
 d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
 
 
-
-
-
 BP = 50000
 subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
-tem <- subd[, c("chr", "winstart", "winend", "ThetaPiMZ", "ThetaPiteo")]
-out <- gather(tem, pop, pi, 4:5)
+tem <- subd[, c("chr", "winstart", "winend", "ThetaPiMZ", "ThetaPiLR", "ThetaPiteo")]
+out <- gather(tem, pop, pi, 4:6)
 out <- subset(out, !is.na(pi))
+
+out[out$pop == "ThetaPiMZ", ]$pop <- "Maize"
+out[out$pop == "ThetaPiteo", ]$pop <- "Teosinte"
+out[out$pop == "ThetaPiLR", ]$pop <- "Landrace"
+
+p2 <- ggplot(out, aes(x=winstart, y=pi, colour=factor(pop, levels=c("Maize", "Landrace", "Teosinte")) )) +
+    labs(colour="") +
+    theme_bw() +
+    xlab("") +
+    ylab("Nucleotide Diversity") +
+    scale_color_manual(values=c("#458b74", "#6495ed", "#8b2323")) +
+    #scale_linetype_manual(values=lty1) +
+    guides(colour = guide_legend()) +
+    geom_smooth(method="loess", span=0.6) +
+    geom_hline(yintercept = mean(d$ThetaPiMZ, na.rm=T), col="#458b74") +
+    geom_hline(yintercept = mean(d$ThetaPiteo, na.rm=T), col="#8b2323") +
+    geom_hline(yintercept = mean(d$ThetaPiLR, na.rm=T), col="#8b2323") +
+    geom_vline(xintercept = c(150049274, 150052250), col="grey") +
+    theme(axis.text.y = element_text(angle = 90, hjust = 0.5),
+          axis.text=element_text(size=fsize),
+          axis.title=element_text(size=fsize, face="bold"),
+          legend.title = element_text(size=fsize, face="bold"),
+          legend.text = element_text(size=fsize),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
+
+pdf("graphs/Fig4.pdf", height=4, width=6)
+p2
+dev.off()
+
+
+
 
 #LocusID L S n D startingtheta inheritancescalar
 df <- subd[, c("chr", "winstart", "winend", "seqbp", "SMZ", "div_sites", "ThetaPiMZ")]
@@ -31,32 +63,7 @@ write.table(df, "largedata/infile.txt", append = TRUE, row.names=FALSE,
 
 mz <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_genestats_MZ.txt", data.table=FALSE)
 
-out[out$pop == "ThetaPiMZ", ]$pop <- "Maize"
-out[out$pop == "ThetaPiteo", ]$pop <- "Teosinte"
 
-p2 <- ggplot(out, aes(x=winstart, y=pi, colour=factor(pop, levels=c("Maize", "Teosinte")) )) +
-    labs(colour="") +
-    theme_bw() +
-    xlab("") +
-    ylab("Nucleotide Diversity") +
-    scale_color_manual(values=c("#458b74", "#8b2323")) +
-    #scale_linetype_manual(values=lty1) +
-    guides(colour = guide_legend()) +
-    geom_smooth(method="loess", span=0.6) +
-    geom_hline(yintercept = mean(d$ThetaPiMZ, na.rm=T), col="#458b74") +
-    geom_hline(yintercept = mean(d$ThetaPiteo, na.rm=T), col="#8b2323") +
-    geom_vline(xintercept = c(150049274, 150052250), col="grey") +
-    theme(axis.text.y = element_text(angle = 90, hjust = 0.5),
-          axis.text=element_text(size=fsize),
-          axis.title=element_text(size=fsize, face="bold"),
-          legend.title = element_text(size=fsize, face="bold"),
-          legend.text = element_text(size=fsize),
-          axis.text.x=element_blank(),
-          axis.ticks.x=element_blank())
-
-pdf("graphs/Fig4.pdf", height=4, width=6)
-p2
-dev.off()
 
 p1 <- ggplot(out, aes(x=x, y=Tajima.D, colour=factor(pop, levels=c("Maize", "Teosinte")) )) +
     labs(colour="") +
