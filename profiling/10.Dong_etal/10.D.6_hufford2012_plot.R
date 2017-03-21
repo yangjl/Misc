@@ -10,8 +10,8 @@ d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt
 
 BP = 50000
 subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
-tem <- subd[, c("chr", "winstart", "winend", "ThetaPiMZ", "ThetaPiteo")]
-out <- gather(tem, pop, pi, 4:5)
+tem <- subd[, c("chr", "winstart", "winend", "ThetaPiMZ", "ThetaPiteo", "ThetaPiLR")]
+out <- gather(tem, pop, pi, 4:6)
 
 
 #LocusID L S n D startingtheta inheritancescalar
@@ -51,10 +51,17 @@ p2
 
 mean(d$ThetaPiMZ, na.rm=T) #0.004533269
 mean(d$ThetaPiteo, na.rm=T) #0.005549941
+mean(d$ThetaPiLR, na.rm=T) #0.004605862
 
+
+# maize
+(0.004533269 - mean(c(0.002038096, 0.000967526)))/0.004533269 #67%
+
+# landrace
+(0.004605862 - mean(c(0.001596407, 0.000892375)))/0.004605862 #73%
 # teosinte
-0.005549941 - mean(c(0.002633691, 0.002250982))/0.005549941 #43%
-0.004533269 - mean(c(0.002038096, 0.002038096))/0.004533269 #45%
+(0.005549941 - mean(c(0.002633691, 0.002250982)))/0.005549941 #56%
+
 
 library(tidyr)
 nucdiv <- read.csv("largedata/agpv4_pai_tru1_win100_25.csv")

@@ -167,6 +167,15 @@ t2 <- 2*abs(log(a0[,11]) - log(a2[,11]))
 dchisq(t1, df=1)
 dchisq(t2, df=1)
 
+a0 <- read.table("largedata/outfile0.txt", header=T)
+a2 <- read.table("largedata/outfile2_LR.txt", header=T, skip = 1)
+    
+t1 <- 2*(log(a0[,9]) - log(a2[,9]))
+t2 <- 2*abs(log(a0[,11]) - log(a2[,11]))
+
+dchisq(t1, df=1)
+dchisq(t2, df=1)
+
 ```
 
 
