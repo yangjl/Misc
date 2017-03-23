@@ -60,44 +60,51 @@ cat(c(nrow(df), 1, "a1", 23.2, "\n"),file="largedata/infile.txt", sep="\t")
 write.table(df, "largedata/infile.txt", append = TRUE, row.names=FALSE, 
             quote=FALSE, sep="\t", col.names=FALSE)
 
+#############
+library(data.table)
+library(tidyr)
+library(ggplot2)
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
 
-mz <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_genestats_MZ.txt", data.table=FALSE)
+
+BP = 50000
+subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
+tem <- subd[, c("chr", "winstart", "winend", "TajDMZ", "TajDLR", "TajDteo")]
+out <- gather(tem, pop, tajd, 4:6)
+out <- subset(out, !is.na(tajd))
+
+out[out$pop == "TajDMZ", ]$pop <- "Maize"
+out[out$pop == "TajDLR", ]$pop <- "Landrace"
+out[out$pop == "TajDteo", ]$pop <- "Teosinte"
 
 
-
-p1 <- ggplot(out, aes(x=x, y=Tajima.D, colour=factor(pop, levels=c("Maize", "Teosinte")) )) +
+p1 <- ggplot(out, aes(x=winstart, y=tajd, colour=factor(pop, levels=c("Maize", "Landrace", "Teosinte")) )) +
     labs(colour="") +
     theme_bw() +
-    xlab("Chr3 (bp)") +
+    xlab("") +
     ylab("Tajima'D") +
-    scale_color_manual(values=c("#458b74", "#8b2323")) +
+    scale_color_manual(values=c("#458b74", "#6495ed", "#8b2323")) +
     #scale_linetype_manual(values=lty1) +
     guides(colour = guide_legend()) +
-    geom_smooth(method="loess", span=0.5) +
-    geom_hline(yintercept = 0.5334655, col="#458b74") +
-    geom_hline(yintercept = 0.3942796, col="#8b2323") +
-    geom_vline(xintercept = c(151329451, 151332389), col="grey") +
+    geom_smooth(method="loess", span= 1.5) +
+    geom_hline(yintercept = mean(d$TajDMZ, na.rm=T), col="#458b74") +
+    geom_hline(yintercept = mean(d$TajDLR, na.rm=T), col="#6495ed") +
+    geom_hline(yintercept = mean(d$TajDteo, na.rm=T), col="#8b2323") +
+    geom_vline(xintercept = c(150049274, 150052250), col="grey") +
     theme(axis.text.y = element_text(angle = 90, hjust = 0.5),
           axis.text=element_text(size=fsize),
           axis.title=element_text(size=fsize, face="bold"),
           legend.title = element_text(size=fsize, face="bold"),
-          legend.text = element_text(size=fsize))
+          legend.text = element_text(size=fsize),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
 p1
-
-
-library(tidyr)
-nucdiv <- read.csv("largedata/agpv4_pai_tru1_win100_25.csv")
-nucdiv$x <- seq(from=start, to=end, length.out=nrow(neu))
-nucdiv <- nucdiv[, -2]
-names(nucdiv)[1:2] <- c("Maize", "Teosinte")
-out2 <- gather(nucdiv, pop, pai, 1:2)
-
 
 
 library(cowplot)
 
-pdf("graphs/Fig3.pdf", height=6, width=8)
-plot_grid(p2,p1, cols=1, labels=c("A", "B"))
+pdf("graphs/Fig3.pdf", height=5, width=13, onefile=FALSE)
+plot_grid(p2, p1, ncol=2, labels=c("A", "B"))
 dev.off()
 
 
