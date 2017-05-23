@@ -1,0 +1,207 @@
+---
+title: "HKA.test"
+author: "Jinliang Yang"
+date: "2/17/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## MLHKA
+LocusID L S n D startingtheta inheritancescalar
+
+```{r}
+# https://github.com/rossibarra/MLHKA/blob/master/README.pdf
+#AGPv2:GRMZM2G039867, chr3:150,049,274..150,052,250
+library(data.table)
+d <- fread("largedata/Hufford2012/757736/Hufford_et_al._2012_10kb_statistics.txt", data.table=FALSE)
+
+BP = 50000
+subd <- subset(d, chr==3 & winstart > 150049274 -BP & winend < 150052250 + BP)
+subd$div <- subd$divergence * subd$div_sites
+
+#LocusID L S n D startingtheta inheritancescalar
+df <- subd[, c("chr", "winstart", "winend", "seqbp", "SMZ", "div", "ThetaPiMZ")]
+df <- subset(df, !is.na(div_sites))
+df$lid <- paste0("Chr", df$chr, "g", df$winstart)
+df$n <- 37
+df$inheritancescalar <- 1
+
+
+df$div <- round(df$div, 0)
+df <- df[, c("lid", "seqbp", "SMZ", "n", "div", "ThetaPiMZ", "inheritancescalar")]
+df <- subset(df, !is.na(div))
+cat(c(nrow(df), 0, 1, "\n"), 
+    file="largedata/infile0.txt", sep="\t")
+write.table(df, "largedata/infile0.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+cat(c(nrow(df), 2, c("Chr3g150040001", "Chr3g150050001"), 1, "\n"), 
+    file="largedata/infile2.txt", sep="\t")
+write.table(df, "largedata/infile2.txt", append = TRUE, row.names=FALSE, 
+            quote=FALSE, sep="\t", col.names=FALSE)
+
+```
+
+
+## Run MLHKA
+```{r}
+
+#MLHKA -i infile.txt -o outfile.txt -s 16397 -c 100000
+
+library(farmeR)
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka0.sh",
+  shcode = "cd largedata; MLHKA -i infile0.txt -o outfile0.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka0", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 1))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 8G --ntasks=1 --time 48:00:00 slurm-scripts/run_mkhka0.sh
+
+set_farm_job(slurmsh = "slurm-scripts/run_mkhka2.sh",
+  shcode = "MLHKA -i largedata/infile2.txt -o largedata/outfile2.txt -s 1234 -c 100000", wd = NULL, 
+  jobid = "hka2", email = "yangjl0930@gmail.com", run = c(FALSE, "bigmemh", 1))
+
+###>>> In this path: cd /home/jolyang/Documents/Github/Misc
+###>>> RUN: sbatch -p bigmemh --mem 8G --ntasks=1 --time 48:00:00 slurm-scripts/run_mkhka2.sh
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r, eval=FALSE}
+# https://bio.cst.temple.edu/~hey/program_files/HKA/HKA_Documentation.htm
+library(PopGenome)
+getstat <- function(start=151329451 - BP, end= 151329451, sample1=a1, sample2=a3){
+    gdat <- readVCF("/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz",
+                    numcols=10000, tid="3", 
+                    samplenames= c(sample1, sample2),  
+                    include.unknown=TRUE,
+                    frompos = start, topos = end, approx=FALSE, out="", 
+                    parallel=FALSE, gffpath=FALSE)
+    
+    ### assign populations
+    gdat <- set.populations(gdat, list(sample1, sample2), diploid=TRUE)
+    
+    # Statistics
+    gdat <- diversity.stats(gdat)
+    d1 <- get.diversity(gdat)
+    d <- gdat@nuc.diversity.between
+    
+    F_ST.stats(gdat)
+
+
+    out <- neutrality.stats(gdat)
+    out <- get.sum.data(gdat)
+    return(c(out@Tajima.D, out@Fu.Li.D, get.sum.data(gdat)) )
+}
+
+vcf_handle <- .Call("VCF_open",filename="/home/jolyang/dbcenter/HapMap/HapMap3/agpv4_chr3_agpv3_140-160M.vcf.gz")
+ind <- .Call("VCF_getSampleNames",vcf_handle)
+
+BP <- 5000
+# AGPv4 annotation
+# (Chr3: 151329451..151332389)
+taxa <- read.csv("data/hmp3_taxa.csv")
+table(taxa$Dataset)
+
+line <- subset(taxa, !(Dataset %in% "German") & !(Dataset %in% "CIMMYT/BGI"))
+length(unique(line$Prefixed_Taxon))
+d282 <- subset(line, Category %in% " Improved" & Dataset %in% "282-4x") #
+
+a1 <- gsub("282set_", "", d282$Prefixed_Taxon)
+a2 <- ind[grep("BKN", ind)]
+a3 <- ind[grep("^TI", ind)]
+
+BP = 5000
+out1_a1 <- getstat(start=151329451 - BP, end= 151329451, sample=a1)
+out1_a2 <- getstat(start=151329451 - BP, end= 151329451, sample=a3)
+out2_a1 <- getstat(start=151329451, end= 151332389, sample=a1)
+out2_a2 <- getstat(start=151329451, end= 151332389, sample=a3)
+out3_a1 <- getstat(start=151332389, end= 151332389 + BP, sample=a1)
+out3_a2 <- getstat(start=151332389, end= 151332389 + BP, sample=a3)
+
+df <- data.frame(locusid=c("up", "tru1", "down"), 
+                 inh=1, 
+                 seqlen1=c(5001, 2938, 5000), seqlen2=c(5000, 2938, 5000), 
+                 seqlen=c(5001, 2938, 5000), 
+                 seq1=length(a1), seq2=length(a2), 
+                 snp1=c(out1_a1[4], out2_a1[4], out3_a1[4]), 
+                 snp2=c(out1_a2[4], out2_a2[4], out3_a2[4]),
+                 td1=c(out1_a1[1], out2_a1[1], out3_a1[1]),
+                 td2=c(out1_a2[1], out2_a2[1], out3_a2[1]),
+                 fd1=c(out1_a1[2], out2_a1[2], out3_a1[2]),
+                 fd2=c(out1_a2[2], out2_a2[2], out3_a2[2])
+                 )
+
+line1 <- "HKA program test data"
+line2 <- 3 # number of loci
+line3 <- "maize\tteosinte"
+cat(c(line1, 
+      line2,
+      line3),
+      file="largedata/hka_input.txt", sep="\n")
+write.table(df, "largedata/hka_input.txt", sep="\t", append = TRUE, row.names=FALSE, col.names=FALSE, quote=FALSE)
+
+
+
+BP = 5000
+
+#151329451-151332389
+
+exon1 <- c(151328862, 151329981)
+intron <- c(151329982, 151331393)
+exon2 <- c(151331394, 151332856)
+
+out1_a1 <- getstat(start=exon1[1], end= exon1[2], sample=a1)
+out1_a2 <- getstat(start=exon1[1], end= exon1[2], sample=a3)
+out2_a1 <- getstat(start=intron[1], end= intron[2], sample=a1)
+out2_a2 <- getstat(start=intron[1], end= intron[2], sample=a3)
+out3_a1 <- getstat(start=exon2[1], end= exon2[2], sample=a1)
+out3_a2 <- getstat(start=exon2[1], end= exon2[2], sample=a3)
+
+leng <- c(out1_a1[3], out2_a1[3], out3_a1[3])
+df <- data.frame(locusid=c("e1", "intron", "e2"), 
+                 inh=1, 
+                 seqlen1=leng, seqlen2=leng, 
+                 seqlen=leng, 
+                 seq1=length(a1), seq2=length(a2), 
+                 snp1=c(out1_a1[4], out2_a1[4], out3_a1[4]), 
+                 snp2=c(out1_a2[4], out2_a2[4], out3_a2[4]),
+                 td1=c(out1_a1[1], out2_a1[1], out3_a1[1]),
+                 td2=c(out1_a2[1], out2_a2[1], out3_a2[1]),
+                 fd1=c(out1_a1[2], out2_a1[2], out3_a1[2]),
+                 fd2=c(out1_a2[2], out2_a2[2], out3_a2[2])
+                 )
+
+line1 <- "HKA program test data"
+line2 <- 3 # number of loci
+line3 <- "maize\tteosinte"
+cat(c(line1, 
+      line2,
+      line3),
+      file="largedata/hka_input2.txt", sep="\n")
+write.table(df, "largedata/hka_input2.txt", sep="\t", append = TRUE, row.names=FALSE, col.names=FALSE, quote=FALSE)
+
+```
+
+
+
+
+
+
